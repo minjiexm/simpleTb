@@ -1,0 +1,5 @@
++incdir+$PROJ_ROOT/apb_agent_pkg
++incdir+$PROJ_ROOT/apb_agent_tb
+
+$PROJ_ROOT/apb_agent_tb/apb_agent_tb_inc.sv
+$PROJ_ROOT/apb_agent_tb/apb_agent_tb.sv
