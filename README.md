@@ -1,2 +1,2 @@
 # simpleTb
-A Very Simple Testbench
+A Very Simple UVM Testbench
