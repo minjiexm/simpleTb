@@ -29,6 +29,8 @@ endif
 
 PROJ_ROOT ?= $(shell pwd)
 FILE_LIST ?= ../apb_agent_tb.fl
+SIM_ARGS  ?= +UVM_VERBOSITY=UVM_DEBUG
+TEST_NAME ?= apb_model_test
 
 #---------------------------------------------------------------
 # Define Variables
@@ -66,15 +68,25 @@ VLOG =  vlog \
         +incdir+$(UVM_HOME)/src \
         $(UVM_HOME)/src/uvm.sv 
 
-
 VSIM =  vsim \
         $(DPILIB_VSIM_OPT) \
         $(VSIM_OPT) \
         $(OPT_R) \
-        -c \
+	$(SIM_ARGS) \
+	+UVM_TESTNAME=$(TEST_NAME) \
         -do "run -all; q" \
         -l questa.log \
-        -f questa.tops
+        -f questa.tops -c
+
+DEBUG = vsim \
+        $(DPILIB_VSIM_OPT) \
+        $(VSIM_OPT) \
+        $(OPT_R) \
+	$(SIM_ARGS) \
+	+UVM_TESTNAME=$(TEST_NAME) \
+        -do "run -all; q" \
+        -l questa.log \
+        -f questa.tops -gui
 
 N_ERRS = 0
 N_FATALS = 0
@@ -124,9 +136,9 @@ help:
 	@echo ""
 	@echo "Variables: specify any of the following on the make command line"
 	@echo ""
-	@echo "  UVM_HOME  - root directory of the UVM library (default:..)"
-	@echo "  UVM_VERBOSITY - verbosity level for vsim (default:UVM_MEDIUM)"
-	@echo "  BITS      - the bus architecture: 32 or 64 (default:32)"
+	@echo "  UVM_HOME - root directory of the UVM library (default:..)"
+	@echo "  SIM_ARGS - simulation arguments. like command line args"
+	@echo "  BITS     - the bus architecture: 32 or 64 (default:32)"
 	@echo ""
 
 clean:
@@ -145,5 +157,8 @@ sim:
 
 check:
 	$(CHECK)
+
+debug:
+	$(DEBUG)
 
 all: comp sim check
