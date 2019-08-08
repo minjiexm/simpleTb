@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("wai",["Function"],[["wait_trigger",,[["uvme_event_pool",,,,0,"File:uvme-1.0/src/event/uvme_event_pool.svh:uvme_event_pool.wait_trigger","SystemVerilogClass:uvme_event_pool:wait_trigger"]]]]);

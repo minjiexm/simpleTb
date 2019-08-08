@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:network/network_macros.svh","network_macros.svh");NDSummary.OnSummaryLoaded("File:network/network_macros.svh",[["SystemVerilog","SystemVerilog"]],[["Groups","Group"],["Macros","Macro"]],[[1,0,0,"Macros","Macros"],[2,0,1,"`MAC_ADDR_SZ","`MAC_ADDR_SZ"],[3,0,1,"`network_uniq_mac_gen","`network_uniq_mac_gen"]]);

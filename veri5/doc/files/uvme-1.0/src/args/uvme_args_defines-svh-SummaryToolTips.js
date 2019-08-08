@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:uvme-1.0/src/args/uvme_args_defines.svh",{33:"<div class=\"NDToolTip TType LSystemVerilog\"><div class=\"TTSummary\">uvme_args_type_e defines the type of arguments.</div></div>",34:"<div class=\"NDToolTip TType LSystemVerilog\"><div class=\"TTSummary\">uvme_args_property_e defines the property of the args.</div></div>"});

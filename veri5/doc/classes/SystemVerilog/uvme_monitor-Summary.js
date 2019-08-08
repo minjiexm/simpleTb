@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SystemVerilogClass:uvme_monitor","uvme_monitor");NDSummary.OnSummaryLoaded("SystemVerilogClass:uvme_monitor",[["SystemVerilog","SystemVerilog"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[149,0,0,"uvme_monitor"],[150,0,2,"Functions","Functions"],[151,0,1,"new","new"],[152,0,1,"build_phase","build_phase"]]);

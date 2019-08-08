@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:uvme-1.0/src/log/uvme_log_defines.svh",{57:"<div class=\"NDToolTip TSection LSystemVerilog\"><div class=\"TTSummary\">These macros are used to unify log msg print format for some scenarios</div></div>"});

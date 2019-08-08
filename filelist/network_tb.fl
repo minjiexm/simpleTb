@@ -1,0 +1,11 @@
+
++incdir+$PROJ_ROOT/veri5/uvme-1.0/src
++incdir+$PROJ_ROOT/veri5/network
++incdir+$PROJ_ROOT/veri5/amiq_eth
+
++incdir+$PROJ_ROOT/amiq_eth_agent
++incdir+$PROJ_ROOT/switch_model
++incdir+$PROJ_ROOT/network_tb
+
+$PROJ_ROOT/network_tb/network_tb_inc.sv
+$PROJ_ROOT/network_tb/network_tb.sv

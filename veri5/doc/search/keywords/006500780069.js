@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("exi",["Function"],[["exists",,[["uvme_args",,,,0,"File:uvme-1.0/src/args/uvme_args.svh:uvme_args.exists","SystemVerilogClass:uvme_args:exists"]]]]);

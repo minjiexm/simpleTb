@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("log",["Section"],[["Log",,[[,"Log Macros",,,0,"File:uvme-1.0/src/log/uvme_log_defines.svh:Log_Macros"]]]]);

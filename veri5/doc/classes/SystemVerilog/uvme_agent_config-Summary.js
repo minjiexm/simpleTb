@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SystemVerilogClass:uvme_agent_config","uvme_agent_config");NDSummary.OnSummaryLoaded("SystemVerilogClass:uvme_agent_config",[["SystemVerilog","SystemVerilog"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[48,0,0,"uvme_agent_config"],[49,0,2,"Functions","Functions"],[143,0,1,"new","new"]]);

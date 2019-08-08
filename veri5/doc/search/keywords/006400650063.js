@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("dec",["Function"],[["decr",,[["uvme_counter",,,,0,"File:uvme-1.0/src/common/uvme_common.svh:uvme_counter.decr","SystemVerilogClass:uvme_counter:decr"]]]]);

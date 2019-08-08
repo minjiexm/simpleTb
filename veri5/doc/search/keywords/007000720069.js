@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("pri",["Function"],[["print_all_args",,[["uvme_args",,,,0,"File:uvme-1.0/src/args/uvme_args.svh:uvme_args.print_all_args","SystemVerilogClass:uvme_args:print_all_args"]]],["print_arg",,[["uvme_args",,,,0,"File:uvme-1.0/src/args/uvme_args.svh:uvme_args.print_arg","SystemVerilogClass:uvme_args:print_arg"]]]]);

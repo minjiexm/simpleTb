@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SystemVerilogClass:uvme_log","uvme_log");NDSummary.OnSummaryLoaded("SystemVerilogClass:uvme_log",[["SystemVerilog","SystemVerilog"]],[["Classes","Class"]],[[41,0,0,"uvme_log"]]);

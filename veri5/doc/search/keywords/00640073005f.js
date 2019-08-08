@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("ds_",["Function"],[["ds_input_process",,[["network_switch",,,,0,"File:network/network_switch.svh:network_switch.ds_input_process","SystemVerilogClass:network_switch:ds_input_process"]]]]);

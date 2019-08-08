@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:uvme-1.0/src/layer/uvme_layer_defines.svh",{38:"<div class=\"NDToolTip TSection LSystemVerilog\"><div class=\"TTSummary\">These macros are used to define imp class to hook uvme_layer_input to other classes</div></div>"});

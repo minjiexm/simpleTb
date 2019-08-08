@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:uvme-1.0/src/event/uvme_event_pool_defines.svh",{30:"<div class=\"NDToolTip TSection LSystemVerilog\"><div class=\"TTSummary\">These macros are used for VIP implement.</div></div>"});

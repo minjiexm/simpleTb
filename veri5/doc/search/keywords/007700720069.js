@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("wri",["Function"],[["write",,[["uvme_coverage",,,,0,"File:uvme-1.0/src/agent/uvme_agent.svh:uvme_coverage.write","SystemVerilogClass:uvme_coverage:write"]]]]);

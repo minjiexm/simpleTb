@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:uvme-1.0/src/args/uvme_args_defines.svh","uvme_args_defines.svh");NDSummary.OnSummaryLoaded("File:uvme-1.0/src/args/uvme_args_defines.svh",[["SystemVerilog","SystemVerilog"]],[["Groups","Group"],["Types","Type"]],[[16,0,0,"Types","Types"],[33,0,1,"uvme_args_type_e","uvme_args_type_e"],[34,0,1,"uvme_args_property_e","uvme_args_property_e"]]);

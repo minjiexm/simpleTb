@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("col",["Function"],[["collect_func_cov",,[["uvme_coverage",,,,0,"File:uvme-1.0/src/agent/uvme_agent.svh:uvme_coverage.collect_func_cov","SystemVerilogClass:uvme_coverage:collect_func_cov"]]]]);
