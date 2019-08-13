@@ -18,17 +18,17 @@
 ##------------------------------------------------------------------------------
 
 export QUESTA_HOME  = c:/EDATools/Mentor/questasim64_10.6c
-export UVM_INST_DIR = c:/EDATools/UVM
+export UVM_INST_DIR = $(shell pwd)/..
 
-export PROJ_ROOT   = $(shell pwd)/../
-export MODEL_HOME  = $(QUESTA_HOME)
-export BITS        = 64
-export UVM_VERSION = 1.1d
-export UVM_HOME    = $(UVM_INST_DIR)/uvm-$(UVM_VERSION)
+export PROJ_ROOT    = $(shell pwd)/..
+export MODEL_HOME   = $(QUESTA_HOME)
+export BITS         = 64
+export UVM_VERSION  = 1.1d
+export UVM_HOME     = $(UVM_INST_DIR)/uvm-$(UVM_VERSION)
 
-export TEST_NAME   = network_test_topology
-export FILE_LIST   = $(PROJ_ROOT)/filelist/network_tb.fl
-export SIM_ARGS    = +PRINT_ALL_ARGS=0 +UVM_VERBOSITY=UVM_HIGH 
+export TEST_NAME    = network_test_topology
+export FILE_LIST    = $(PROJ_ROOT)/filelist/network_tb.fl
+export SIM_ARGS     = +PRINT_ALL_ARGS=0 +UVM_VERBOSITY=UVM_HIGH 
 
 #Arg lists
 # +AUTO_MAC_TABLE_INIT=0
@@ -44,14 +44,20 @@ readme:
 	@echo "                 For example "c:/EDATools/Mentor/questasim64_10.6c"   "
 	@echo "  UVM_INST_DIR : Upper level Path of UVM lib.                         "
 	@echo "                 For exmaple "c:/EDATools/UVM"                        "
-	@echo "                 In this simple TB, we choose uvm-1.1d                "
+	@echo "                 In this simple TB, we are using uvm-1.1d             "
 	@echo "                 So UVM_HOME will be $(UVM_INST_DIR)/uvm-1.1d         "
-	@echo "                                    "
-	@echo "Please modify line 1 and 2 of this file                               " 
+	@echo "                                                                      "
+	@echo "  If you don't have any pre-install UVM libs.                         "
+	@echo "  Please use below command to download:                               "
+	@echo "    cd $(PROJ_ROOT) && git submodule update --init --recursive        "
+	@echo "  This will clone UVM 1.1d into $(PROJ_ROOT)/uvm-1.1d                 "
+	@echo "  By default, UVM_INST_DIR already set to $(PROJ_ROOT)                "
+	@echo "                                                                      "
+	@echo "  Please modify line 1 and 2 of this file                             " 
 	@echo "  to point them to the right path in your env.                        "
 	@echo "                                                                      "
 	@echo "----------------------------------------------------------------------"
-	@echo "Below is the run commands to run the demo tests:                      "                                                                      "
+	@echo "Below is the run commands to run the demo tests:                      "
 	@echo "----------------------------------------------------------------------"
 	@echo "Run topology test case command :                                      "
 	@echo "    make TEST_NAME=network_test_topology all | tee sim.log            "
