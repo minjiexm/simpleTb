@@ -1,0 +1,7 @@
+#UVM LIB
+uvm-1.1d
+
+#Simulation Log
+sim/*.log
+sim/questa.tops
+sim/work/*

@@ -1,0 +1,4 @@
+[submodule "uvm-1.1d"]
+	path = uvm-1.1d
+	url = https://github.com/hbq/uvm-1.1d
+	ignore = dirty
