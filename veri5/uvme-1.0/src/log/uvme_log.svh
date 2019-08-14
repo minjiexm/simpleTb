@@ -47,7 +47,21 @@ class uvme_log extends uvm_object;
   //
   //Global Type mismach message id.
   
-  static string type_mismatch_msg_id = "TYPE_MISMATCH";
+  static string type_mismatch_msg_id = "MISMATCH::TYPE";
+
+
+  //Member: uvme_log::data_mismatch_msg_id
+  //
+  //Global Data mismach message id.
+  
+  static string data_mismatch_msg_id = "MISMATCH::DATA";
+
+
+  //Member: uvme_log::out_of_range_msg_id
+  //
+  //Global Out of range message id.
+  
+  static string out_of_range_msg_id = "OUT_OF_RANGE";
 
 
   //Member: uvme_log::trace_msg_id
@@ -55,6 +69,21 @@ class uvme_log extends uvm_object;
   //Prefix of all trace message id
   
   static string trace_msg_id = "TRACE";
+
+
+  //Member: uvme_log::trace_debug
+  //
+  //For user to insert some temp debug message
+  //This message id is used to trace some user temp debug message.
+  
+  static string trace_debug = {uvme_log::trace_msg_id, "::DEBUG"};
+  
+  
+  //Member: uvme_log::trace_debug_verb
+  //
+  //Global trace debug message print verbosity, default is UVM_DEBUG.
+  
+  static uvm_verbosity trace_debug_verb = UVM_DEBUG;
 
 
   //Member: uvme_log::trace_event
@@ -101,35 +130,6 @@ class uvme_log extends uvm_object;
   //Global trace connect message print verbosity, default is UVM_HIGH.
 
   static uvm_verbosity trace_connect_verb = UVM_HIGH;
-
-
-  //Member: uvme_log::trace_func
-  //
-  //Global trace function message id.
-  //This message id is used to trace function exec sequence.
-  
-  static string trace_func = {uvme_log::trace_msg_id, "::FUNC"};
-
-  //Member: trace_func_verb
-  //
-  //Global trace funcion exec message print verbosity, default is UVM_DEBUG.
- 
-  static uvm_verbosity trace_func_verb = UVM_DEBUG;
-
-
-  //Member: uvme_log::trace_task
-  //
-  //Global trace task message id.
-  //This message id is used to trace task exec sequence.
-    
-  static string trace_task = {uvme_log::trace_msg_id, "::TASK"};
-
-
-  //Member: uvme_log::trace_task_verb
-  //
-  //Global trace task exec message print verbosity, default is UVM_DEBUG.
-  
-  static uvm_verbosity trace_task_verb = UVM_DEBUG;
 
 
   //Member: uvme_log::trace_args

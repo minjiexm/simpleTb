@@ -38,6 +38,8 @@ class uvme_layer_sequence #(type T = uvm_sequence_item) extends uvm_sequence#(T,
 
   protected layer_fifo_type m_fifo;
 
+  protected int unsigned trans_id;
+
   `uvm_object_param_utils_begin(this_layer_seqr_type)
   `uvm_object_utils_end
 
@@ -65,21 +67,25 @@ class uvme_layer_sequence #(type T = uvm_sequence_item) extends uvm_sequence#(T,
   // Domain means we can use same event name within different domain.
   
   task body();
+    this.trans_id = 1; //start from 1
+	
     if(this.m_fifo != null) begin
       forever begin
-	    T req, rsp, txn4send;
+	    T txn4send;
         this.m_fifo.get(req); //blocking until get data
 		//[NOTE]: For Layer Sequence, it must clone the data it received and then pass to next layer.
 		//Otherwise, next layer sequence will get wrong sequencer from the transaction.
 		//Sequencer and Sequence information will be carried with in the transaction.
+
 		`uvme_cast(txn4send, req.clone(), fatal);
-		//txn4send.set_parent_sequence(this);
-		//txn4send.set_sequencer(this.p_sequencer);
-	    //`uvme_info($psprintf("[%s] Get a data from m_fifo and going to send to p sequencer %s", this.get_full_name(), this.p_sequencer.get_full_name()), UVM_LOW)
+		txn4send.set_item_context(this, this.p_sequencer);
+		txn4send.set_transaction_id(this.trans_id++);
+
+	    //`uvm_info("TRACE::LAYER_SEQUENCE",$psprintf("[%s] Get a data from m_fifo and going to send to p sequencer %s", this.get_full_name(), this.p_sequencer.get_full_name()), UVM_LOW)
 	    `uvm_send(txn4send)
 	    //`uvme_info($psprintf("[%s] Send the data to p sequencer %s and waiting for response", this.get_full_name(), this.p_sequencer.get_full_name()), UVM_LOW)
-	    get_response(rsp); //blocking until get response
-		//`uvme_info($psprintf("[%s] Get the response from p sequencer %s", this.get_full_name(), this.p_sequencer.get_full_name()), UVM_LOW)
+	    get_response(rsp, txn4send.get_transaction_id()); //blocking until get response
+		//`uvm_info("TRACE::LAYER_SEQUENCE", $psprintf("[%s] Get the response %s from p sequencer %s for transaction %0d", this.get_full_name(), rsp.convert2string(), this.p_sequencer.get_full_name(), txn4send.get_transaction_id()), UVM_LOW)
       end
     end
     else begin

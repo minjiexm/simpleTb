@@ -37,7 +37,9 @@ class amiq_eth_driver extends uvme_driver#(amiq_eth_packet);
   //
   //amiq_eth_driver will send the data to fake DUT through this port.
 
-  uvm_analysis_port#(amiq_eth_packet) pkt_drv_port;
+  uvm_analysis_port#(amiq_eth_packet) dut_port;
+
+  uvm_analysis_port#(amiq_eth_packet) model_port;
 
   `uvm_component_utils(amiq_eth_driver)
 
@@ -57,7 +59,8 @@ class amiq_eth_driver extends uvme_driver#(amiq_eth_packet);
 
   virtual function void build_phase(uvm_phase phase);
     super.build_phase(phase);
-	this.pkt_drv_port = new("pkt_drv_port", this);
+	this.dut_port   = new("dut_port", this);
+	this.model_port = new("model_port", this);
   endfunction : build_phase
 
 
@@ -70,17 +73,24 @@ class amiq_eth_driver extends uvme_driver#(amiq_eth_packet);
     forever begin
       seq_item_port.get_next_item(req);
 
-      `uvm_info(this.get_type_name(), $psprintf("Get a packet from Seqr"), UVM_LOW)
+	  begin
+	    amiq_eth_packet pkt4model;
+		`uvme_cast(pkt4model, req.clone(), fatal)
+        `uvme_trace_data($psprintf("[run_phase] Send the packet %s to Ref Model", pkt4model.convert2string()))
+        this.model_port.write(pkt4model); //drive to refmodel
+      end
 
-      this.pkt_drv_port.write(req);  //send to analysis_port
+      #100ns;  //wait for 100ns then start to send the packet, mimic DUT process delay
+      begin //drive DUT
+	    amiq_eth_packet pkt4dut;
+		`uvme_cast(pkt4dut, req.clone(), fatal)
+        `uvme_trace_data($psprintf("[run_phase] Send the packet %s to DUT", pkt4dut.convert2string()))
+        this.dut_port.write(pkt4dut);  //drive to DUT
+      end
 
       seq_item_port.item_done();
 
-      begin
-        amiq_eth_packet rsp = amiq_eth_packet::type_id::create("rsp");
-	    rsp.set_id_info(req);
-	    this.rsp_port.write(rsp);
-      end
+	  this.rsp_port.write(req);  //send req back as response
     end
   endtask : run_phase
 

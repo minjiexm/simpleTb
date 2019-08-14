@@ -94,8 +94,9 @@ class switch_model extends uvm_agent;
 
     super.build_phase(phase);
 
-    if(!uvm_config_db #(switch_model_config)::get(this, "", "cfg", this.cfg)) begin
+    if(!uvm_config_db #(switch_model_config)::get(this, "", "cfg", this.cfg)) begin	
       this.cfg = switch_model_config::type_id::create("cfg");
+	  void'( uvm_config_db#(int)::get(this, "", "port_size", this.cfg.port_num) );
     end
 
     //this.cfg.print();

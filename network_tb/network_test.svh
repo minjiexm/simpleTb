@@ -22,6 +22,8 @@
 `define NETWORK_TEST_SV
 
 import network_pkg::*;
+import switch_scoreboard_pkg::*;
+
 
 //Class: network_test_base
 //
@@ -30,13 +32,37 @@ import network_pkg::*;
 
 class network_test_base extends uvm_test;
 
-  switch_model           i_sw_dut;
+  int unsigned sw_port_sz = 4;
 
+  //Member: DUT
+  //
+  //behavior model as Fake DUT
+
+  switch_model           DUT;  //Fake Switch DUT
+
+
+  //Member: ref_model
+  //
+  //behavior model as reference model
+
+  switch_model           ref_model;
+
+
+  //Member: sb
+  //
+  //switch Scoreboard
+  switch_scoreboard      sb;
+
+  //Member: pkt_agent_subenv
+  //
+  //subenv of drive and mointor agents
+ 
   amiq_eth_agent_subenv  pkt_agent_subenv;
 
   //Register with factory
-  `uvm_component_utils(network_test_base);
+  `uvm_component_utils(network_test_base)
     
+	
   //Function: new
   //
   //Constructor
@@ -57,9 +83,21 @@ class network_test_base extends uvm_test;
 	`uvme_set_report_server
 	
     //create instance of fake switch DUT
-    this.i_sw_dut = switch_model::type_id::create("i_sw_dut", this);
+    void'( uvm_config_db#(int)::set(this, "DUT", "port_size", this.sw_port_sz));
+    this.DUT = switch_model::type_id::create("DUT", this);
+	
+	//create reference model
+    void'( uvm_config_db#(int)::set(this, "ref_model", "port_size", this.sw_port_sz));
+	this.ref_model = switch_model::type_id::create("ref_model", this);
+
+	//create scoreboard to compare
+	void'( uvm_config_db#(int)::set(this, "sw_scoreboard", "port_size", this.sw_port_sz));
+    this.sb = switch_scoreboard::type_id::create("sb", this);
+
+	//create agent which drive and receive data from DUT
     this.pkt_agent_subenv = amiq_eth_agent_subenv::type_id::create("pkt_agent_subenv", this);
-  endfunction : build_phase
+
+ endfunction : build_phase
 
 
 
@@ -70,14 +108,20 @@ class network_test_base extends uvm_test;
   function void connect_phase(uvm_phase phase);
     super.connect_phase(phase);
 	
-    //connect Fake DUT sw_model to driver and monitor
-    for(int unsigned idx = 0; idx < 4; idx++) begin
-      //connect sw_model output to monitor
-      this.i_sw_dut.out_port[idx].link_fifo(this.pkt_agent_subenv.passive_pkt_agent[idx].monitor.pkt_rcv_fifo);
-      //connect driver to sw_model input
-      this.pkt_agent_subenv.active_pkt_agent[idx].driver.pkt_drv_port.connect(this.i_sw_dut.in_port[idx].get_imp());
-    end
+	//connect Fake DUT sw_model to driver and monitor
+    for(int unsigned pidx = 0; pidx < this.sw_port_sz; pidx++) begin
+      //connect DUT output to monitor
+      this.DUT.out_port[pidx].link_fifo(this.pkt_agent_subenv.passive_pkt_agent[pidx].monitor.pkt_rcv_fifo);
+      //connect driver to DUT input
+      this.pkt_agent_subenv.active_pkt_agent[pidx].driver.dut_port.connect(this.DUT.in_port[pidx].get_imp());
 
+	  //connect driver to Reference Model input
+      this.pkt_agent_subenv.active_pkt_agent[pidx].driver.model_port.connect(this.ref_model.in_port[pidx].get_imp());
+  
+      //Connect DUT and Ref to Scoreboard
+      this.ref_model.out_port[pidx].link_export(this.sb.port_checker[pidx].ref_in_exp);
+      this.DUT.out_port[pidx].link_export(this.sb.port_checker[pidx].dut_in_exp);	 
+    end
   endfunction : connect_phase
 
 
@@ -87,11 +131,13 @@ class network_test_base extends uvm_test;
   //Standard UVM end_of_elaboration_phase
 
   function void end_of_elaboration_phase(uvm_phase phase);
+  	uvm_phase main_phase = phase.find_by_name("main", 0);
     super.end_of_elaboration_phase(phase);
+    main_phase.phase_done.set_drain_time(this, 1000ns);
     //this.i_sw_dut.print();
-    //this.pkt_agent_subenv.print();
+    //this.pkt_agent_subenv.print();();
   endfunction : end_of_elaboration_phase
-
+  
 
   
   //Function: report_phase

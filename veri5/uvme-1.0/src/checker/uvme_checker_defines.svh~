@@ -17,19 +17,30 @@
 //   permissions and limitations under the License.
 //-----------------------------------------------------------------------------
 
-`ifndef UVME_MACROS_SVH
-`define UVME_MACROS_SVH
+`ifndef UVME_CHECKER_DEFINES_SVH
+`define UVME_CHECKER_DEFINES_SVH
 
+//-----------------------------------------------------------------------------
+// Title: Checker Macros
 //
-//  Include sub modules' defines
+// These macros are used to identify the type of checker
+//-----------------------------------------------------------------------------
+
+
+
+//-----------------------------------------------------------------------------
+// MACRO: `uvme_set_report_server
 //
+//| `uvme_set_report_server
+//
+// Setup report message format.
 
-`include "common/uvme_common_defines.svh"
-`include "log/uvme_log_defines.svh"
-`include "layer/uvme_layer_defines.svh"
-`include "analysis/uvme_analysis_defines.svh"
-`include "event/uvme_event_pool_defines.svh"
-`include "args/uvme_args_defines.svh"
-`include "checker/uvme_checker_defines.svh"
+`define uvme_set_report_server \
+  begin \
+    uvme_log_report_server report_server = new(); \
+	uvm_report_server::set_server(report_server); \
+  end
+  
 
-`endif  // UVME_MACROS_SVH
+
+`endif  // UVME_CHECKER_DEFINES_SVH

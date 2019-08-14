@@ -18,31 +18,30 @@
 //   permissions and limitations under the License.
 //------------------------------------------------------------------------------
 
-//`timescale 1ns/1ns
+`ifndef SWITCH_SCOREBOARD_CHECKER_SV
+`define SWITCH_SCOREBOARD_CHECKER_SV
 
-//-------------------------------------------
-// Top level Test module
-//  Includes all env component and sequences files 
-//    (you could ideally create an env package and import that as well instead of including)
-//-------------------------------------------
+//Class: switch_scoreboard_checker
+//
+//Top level switch scoreboad
+//
 
-//--------------------------------------------------------
-//Top level module that instantiates
-//No real DUT or APB slave as of now
-//--------------------------------------------------------
+class switch_scoreboard_checker extends uvme_checker#(amiq_eth_packet);
 
-module testbench;
 
-  initial begin
+  //Register with factory
+  `uvm_component_utils(switch_scoreboard_checker);
+    
+  //Function: new
+  //
+  //Constructor
 
-    // units, precision, suffix, min field width
-    $timeformat(-9, 0, "ns", 11);  
+  function new(string name = "switch_scoreboard_checker", uvm_component parent = null);
+    super.new(name, parent);
+  endfunction : new
 
-    //Call the test - but passing run_test argument as test class name
-    //Another option is to not pass any test argument and use +UVM_TEST on command line to sepecify which test to run
-    run_test();
-
-  end
   
-endmodule : testbench
+endclass : switch_scoreboard_checker
 
+
+`endif  // SWITCH_SCOREBOARD_CHECKER_SV

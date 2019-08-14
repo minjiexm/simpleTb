@@ -18,23 +18,18 @@
 //   permissions and limitations under the License.
 //------------------------------------------------------------------------------
 
-import uvm_pkg::*;
+`ifndef  SWITCH_SCOREBOARD_PKG_SV
+`define  SWITCH_SCOREBOARD_PKG_SV
 
-`include "uvme_pkg.sv"
-import uvme_pkg::*;
+package switch_scoreboard_pkg;
 
-`include "network_pkg.sv"
-import network_pkg::*;
+  import uvm_pkg::*;
+  import uvme_pkg::*;
+  import amiq_eth_pkg::*;
 
-`include "amiq_eth_agent_pkg.sv"
-import amiq_eth_agent_pkg::*;
+  `include "switch_scoreboard_checker.sv"
+  `include "switch_scoreboard.sv"
 
-`include "switch_model_pkg.sv"
-import switch_model_pkg::*;
+endpackage : switch_scoreboard_pkg
 
-`include "switch_scoreboard_pkg.sv"
-import switch_scoreboard_pkg::*;
-
-`include "network_topology_demo.svh"
-
-`include "network_test.svh"
+`endif //SWITCH_SCOREBOARD_PKG_SV

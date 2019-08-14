@@ -25,7 +25,7 @@
 //UVM report server
 
 class uvme_log_report_server extends uvm_report_server;
-
+  
   //Function: compose_message
   //
   //Format UVM message print log
@@ -51,14 +51,19 @@ class uvme_log_report_server extends uvm_report_server;
 		   filename_nopath = {filename_nopath, filename[i]};
        end
 
+       //Please add below two lines in Top TB where call run_test.
+       // units, precision, suffix, min field width
+       //$timeformat(-9, 0, "ns", 11);
+
        // number of initial spaces in the second line
        // = 8 + 1(space) + 1(@) + 7 + 2("ns") + 3(spaces) + 2(indentation) = 24
        // return $psprintf( "%-8s @%7tns%3s\"%s\" >%s(%0d)\n%24s%s [%s]",             
        //                   severity_type.name(), $time/1000.00, " ",
        //                   name, filename_nopath, line, " ", message, id );   
-       return $psprintf( "%-8s @%7tns%3s%s (%0d) > \"%s\" [%s] %s",
-                         severity_type.name(), $time/1000.00, " ",
-                         filename_nopath, line, name, id, message);
+       return $psprintf( "%-8s @%7t%3s%s (%0d) > [%s] \"%s\" %s",
+                         severity_type.name(), $time, " ",
+                         filename_nopath, line, id, name, message);
+
     end
 
   endfunction: compose_message

@@ -95,7 +95,7 @@ class uvme_analysis_output #(type T = uvm_sequence_item) extends uvm_component;
        T data;
       `uvme_cast(data, txn.clone(), fatal);  //Create a new clone and send to next input, so that the orignal handle still can be used by local.
       `uvm_do_callbacks(this_output_type, this_cb_type, send_cbF(txn))
-      `uvme_trace_data($psprintf("Output %s Transmit a transaction %s", this.get_full_name(), data.convert2string()))
+      `uvme_trace_data($psprintf("[send] Transmit a transaction %s", data.convert2string()))
       this.m_out_port.write(txn); //blocking put
     end
 
@@ -110,7 +110,7 @@ class uvme_analysis_output #(type T = uvm_sequence_item) extends uvm_component;
   virtual function void link(this_input_type neighbour_input);
     //`uvme_cast(this.m_neighbour_input, neighbour_input)
     this.m_out_port.connect(neighbour_input.get_imp());
-    `uvme_trace_connect($psprintf("Output %s -link-> Input %s", this.get_full_name(), neighbour_input.get_full_name()))
+    `uvme_trace_connect($psprintf("[link] ----> %s", neighbour_input.get_full_name()))
   endfunction : link
 
 
@@ -135,7 +135,7 @@ class uvme_analysis_output #(type T = uvm_sequence_item) extends uvm_component;
 
   virtual function void link_fifo(uvm_tlm_analysis_fifo#(T) fifo);
     this.m_out_port.connect(fifo.analysis_export);
-    `uvme_trace_connect($psprintf("[link_sequencer] Output %s -link-> Fifo %s", this.get_full_name(), fifo.get_full_name()))
+    `uvme_trace_connect($psprintf("[link_fifo] ----> %s", fifo.get_full_name()))
   endfunction : link_fifo
 
 
@@ -145,7 +145,7 @@ class uvme_analysis_output #(type T = uvm_sequence_item) extends uvm_component;
 
   virtual function void link_export(uvm_analysis_export#(T) analysis_export);
     this.m_out_port.connect(analysis_export);
-    `uvme_trace_connect($psprintf("[link_sequencer] Output %s -link-> Analysis_export %s", this.get_full_name(), analysis_export.get_full_name()))
+    `uvme_trace_connect($psprintf("[link_export] ----> %s", analysis_export.get_full_name()))
   endfunction : link_export
 
 

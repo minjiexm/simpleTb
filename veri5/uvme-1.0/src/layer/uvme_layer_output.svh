@@ -130,7 +130,7 @@ class uvme_layer_output #(type T = uvm_sequence_item) extends uvm_component;
        T data;
       `uvme_cast(data, txn.clone(), fatal);  //Create a new clone and send to next input, so that the orignal handle still can be used by local.
       `uvm_do_callbacks(this_output_type, this_cb_type, send_cbF(txn))
-	  `uvme_trace_data($psprintf("Output %s Transmit a transaction %s", this.get_full_name(), data.convert2string()))
+	  `uvme_trace_data($psprintf("[send] Transmit a transaction %s", data.convert2string()))
       //`uvme_trace_data($psprintf("Output %s Neighbour %s", this.get_full_name(), this.neighbour.get_full_name()))
       this.m_fifo.put(txn); //blocking put
     end
@@ -146,7 +146,7 @@ class uvme_layer_output #(type T = uvm_sequence_item) extends uvm_component;
   virtual task run_phase(uvm_phase phase);
     super.run_phase(phase);
 
-    `uvme_trace_task_start("run_phase")
+    //`uvme_trace_task_start("run_phase")
 
     if(this.m_neigbour_seqr != null) begin
       fork
@@ -173,7 +173,7 @@ class uvme_layer_output #(type T = uvm_sequence_item) extends uvm_component;
       end
     end
     
-    `uvme_trace_task_end("run_phase")
+    //`uvme_trace_task_end("run_phase")
   endtask : run_phase
 
 
@@ -184,7 +184,7 @@ class uvme_layer_output #(type T = uvm_sequence_item) extends uvm_component;
  
   virtual function void link(this_input_type neighbour_input);
     `uvme_cast(this.m_neigbour_seqr, neighbour_input.sequencer, error)
-    `uvme_trace_connect($psprintf("Output %s -link-> Input %s", this.get_full_name(), neighbour_input.get_full_name()))
+    `uvme_trace_connect($psprintf("[link] ----> %s", neighbour_input.get_full_name()))
   endfunction : link
 
 
@@ -210,7 +210,7 @@ class uvme_layer_output #(type T = uvm_sequence_item) extends uvm_component;
 
   virtual function void link_sequencer(uvm_sequencer#(T) agent_seqr);
     `uvme_cast(this.m_neigbour_seqr, agent_seqr, error)
-    `uvme_trace_connect($psprintf("[link_sequencer] Output %s -link-> Sequencer %s", this.get_full_name(), agent_seqr.get_full_name()))
+    `uvme_trace_connect($psprintf("[link_sequencer] ----> Sequencer %s", agent_seqr.get_full_name()))
   endfunction : link_sequencer
 
 

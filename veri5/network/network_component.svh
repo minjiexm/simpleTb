@@ -51,7 +51,7 @@ class network_component extends uvm_component;
 
   virtual function void build_phase(uvm_phase phase);
     super.build_phase(phase);
-	this.counter = uvme_counter::type_id::create(this.get_name());
+	this.counter = uvme_counter::type_id::create({this.get_full_name(),".counter"});
   endfunction : build_phase
 
 

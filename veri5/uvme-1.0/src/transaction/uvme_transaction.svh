@@ -254,6 +254,7 @@ class uvme_multi_format_header #(type T = int unsigned) extends uvme_layer_heade
 
   virtual function uvme_multi_format_header get_format();
     //A::type_id::set_type_override( AA::get_type() );
+	return null;
   endfunction : get_format
   
   

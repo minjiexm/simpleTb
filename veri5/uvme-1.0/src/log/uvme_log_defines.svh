@@ -102,7 +102,7 @@
 // Print data information for trace;
 //-----------------------------------------------------------------------------
 `define uvme_trace_data(msg) \
-  `uvm_info(uvme_log::trace_data, $psprintf("[%s] %s", this.get_full_name(), msg), uvme_log::trace_data_verb)
+  `uvm_info(uvme_log::trace_data, $psprintf("[%s] %s", this.get_type_name(), msg), uvme_log::trace_data_verb)
 
 
 
@@ -114,7 +114,20 @@
 // Print connect information for trace;
 //-----------------------------------------------------------------------------
 `define uvme_trace_connect(msg) \
-  `uvm_info(uvme_log::trace_connect, $psprintf("[%s] %s", this.get_full_name(), msg), uvme_log::trace_connect_verb)
+  `uvm_info(uvme_log::trace_connect, $psprintf("[%s] %s", this.get_type_name(), msg), uvme_log::trace_connect_verb)
+
+
+
+//-----------------------------------------------------------------------------
+// MACRO: `uvme_trace_debug
+//
+//| `uvme_trace_debug(msg)
+//
+// Print a temp debug message;
+//-----------------------------------------------------------------------------
+
+`define uvme_trace_debug(msg) \
+  `uvm_info(uvme_log::trace_debug, $psprintf("[%s] %s", this.get_type_name(), msg), uvme_log::trace_debug_verb)
 
 
 
@@ -127,7 +140,7 @@
 //-----------------------------------------------------------------------------
 
 `define uvme_trace_func_start(func) \
-  `uvm_info(uvme_log::trace_func, $psprintf("[%s::%s] ........ Started ........", this.get_full_name(), func), uvme_log::trace_func_verb)
+  `uvm_info(uvme_log::trace_debug, $psprintf("[Func %s::%s] ........ Started ........", this.get_type_name(), func), uvme_log::trace_debug_verb)
 
 
 
@@ -140,7 +153,7 @@
 //-----------------------------------------------------------------------------
 
 `define uvme_trace_func_end(func) \
-  `uvm_info(uvme_log::trace_func, $psprintf("[%s::%s] ........ Ended ........", this.get_full_name(), func), uvme_log::trace_func_verb)
+  `uvm_info(uvme_log::trace_debug, $psprintf("[Func %s::%s] ........ Ended ........", this.get_type_name(), func), uvme_log::trace_debug_verb)
 
 
 
@@ -153,7 +166,7 @@
 //-----------------------------------------------------------------------------
 
 `define uvme_trace_task_start(taskName) \
-  `uvm_info(uvme_log::trace_task, $psprintf("[%s::%s] ........ Started ........", this.get_full_name(), taskName), uvme_log::trace_task_verb)
+  `uvm_info(uvme_log::trace_debug, $psprintf("[Task %s::%s] ........ Started ........", this.get_type_name(), taskName), uvme_log::trace_debug_verb)
 
 
 
@@ -166,7 +179,7 @@
 //-----------------------------------------------------------------------------
 
 `define uvme_trace_task_end(taskName) \
-  `uvm_info(uvme_log::trace_task, $psprintf("[%s::%s] ........ Ended ........", this.get_full_name(), taskName), uvme_log::trace_task_verb)
+  `uvm_info(uvme_log::trace_debug, $psprintf("[Task %s::%s] ........ Ended ........", this.get_type_name(), taskName), uvme_log::trace_debug_verb)
 
 
 
@@ -179,7 +192,7 @@
 //-----------------------------------------------------------------------------
 
 `define uvme_trace_arg(msg) \
-  `uvm_info(uvme_log::trace_arg, $psprintf("[%s] %s", this.get_full_name(), msg), uvme_log::trace_arg_verb)
+  `uvm_info(uvme_log::trace_arg, $psprintf("[%s] %s", this.get_type_name(), msg), uvme_log::trace_arg_verb)
 
 
 
@@ -192,7 +205,7 @@
 //-----------------------------------------------------------------------------
 
 `define uvme_trace_cnt(msg) \
-  `uvm_info(uvme_log::trace_cnt, $psprintf("[%s] %s", this.get_full_name(), msg), uvme_log::trace_cnt_verb)
+  `uvm_info(uvme_log::trace_cnt, $psprintf("[%s::%s] %s",this.get_type_name(), this.get_full_name(), msg), uvme_log::trace_cnt_verb)
 
 
 
@@ -242,20 +255,48 @@
 //-----------------------------------------------------------------------------
 
 `define uvme_trace_cnt_report(counter_name, counter_value) \
-  `uvm_info(uvme_log::trace_cnt, $psprintf("[%s] [REPORT] Counter: %s    Value: %0d", this.get_full_name(), counter_name, counter_value), UVM_LOW)
+  `uvme_trace_cnt($psprintf("[REPORT] Counter: %s    Value: %0d", counter_name, counter_value), UVM_LOW)
+
+
+
+//-----------------------------------------------------------------------------
+// MACRO: `uvme_out_of_range
+//
+//| `uvme_out_of_range(msg, warning)
+//| `uvme_out_of_range(msg, error)
+//| `uvme_out_of_range(msg, fatal)
+//
+// Print messages for out of range error;
+//-----------------------------------------------------------------------------
+
+`define uvme_out_of_range(msg, errType) \
+  `uvm_``errType(uvme_log::out_of_range_msg_id, $psprintf("[%s] %s", this.get_type_name(), msg))
+
+
+
+//-----------------------------------------------------------------------------
+// MACRO: `uvme_data_mismatch
+//
+//| `uvme_data_mismatch(msg, error)
+//| `uvme_type_mismatch(msg, fatal)
+//
+// Print Error message when $cast type is mismatch ;
+//-----------------------------------------------------------------------------
+`define uvme_data_mismatch(msg, errType) \
+  `uvm_``errType(uvme_log::data_mismatch_msg_id, $psprintf("[%s] %s", this.get_type_name(), msg))
 
 
 
 //-----------------------------------------------------------------------------
 // MACRO: `uvme_type_mismatch
 //
-//| `uvme_type_mismatch($psprintf("[%s] Failed to cast %s type %s to dst", src.get_full_name(), src_get_type_name()), error)
-//| `uvme_type_mismatch($psprintf("[%s] Failed to cast %s type %s to dst", src.get_full_name(), src_get_type_name()), fatal)
+//| `uvme_type_mismatch($psprintf("[%s] Failed to cast %s type %s to dst", src.get_type_name(), src_get_type_name()), error)
+//| `uvme_type_mismatch($psprintf("[%s] Failed to cast %s type %s to dst", src.get_type_name(), src_get_type_name()), fatal)
 //
 // Print Error message when $cast type is mismatch ;
 //-----------------------------------------------------------------------------
 `define uvme_type_mismatch(msg, errType) \
-  `uvm_``errType(uvme_log::type_mismatch_msg_id, $psprintf("[%s] %s", this.get_full_name(), msg))
+  `uvm_``errType(uvme_log::type_mismatch_msg_id, $psprintf("[%s] %s", this.get_type_name(), msg))
 
 
 //-----------------------------------------------------------------------------
@@ -267,7 +308,7 @@
 //-----------------------------------------------------------------------------
 
 `define uvme_type_mismatch_error(target, src) \
-  `uvm_error(uvme_log::type_mismatch_msg_id, $psprintf(`"[%s] Fail to cast %s type %s to %s`", this.get_full_name(), src.get_full_name(), src.get_type_name(), target))
+  `uvm_error(uvme_log::type_mismatch_msg_id, $psprintf(`"[%s] Fail to cast %s type %s to %s`", this.get_type_name(), src.get_full_name(), src.get_type_name(), target))
 
 
 //-----------------------------------------------------------------------------
@@ -279,7 +320,7 @@
 //-----------------------------------------------------------------------------
 
 `define uvme_type_mismatch_fatal(target, src) \
-  `uvm_fatal(uvme_log::type_mismatch_msg_id, $psprintf(`"[%s] Fail to cast %s type %s to %s`", this.get_full_name(), src.get_full_name(), src.get_type_name(), target))
+  `uvm_fatal(uvme_log::type_mismatch_msg_id, $psprintf(`"[%s] Fail to cast %s type %s to %s`", this.get_type_name(), src.get_full_name(), src.get_type_name(), target))
 
 
 

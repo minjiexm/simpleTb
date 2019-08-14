@@ -75,11 +75,8 @@ class uvme_layer_receiver #(type T = uvm_sequence_item) extends uvm_driver#(T);
 
       this.seq_item_port.item_done();
 
-      begin
-        T rsp = T::type_id::create("rsp");
-	    rsp.set_id_info(req);
-	    this.rsp_port.write(rsp);
-      end
+      //just send req back as response
+	  this.rsp_port.write(req);
     end
 
   endtask : run_phase

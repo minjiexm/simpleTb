@@ -53,6 +53,7 @@ class amiq_eth_agent extends uvme_agent#(amiq_eth_packet);
   virtual function void build_phase(uvm_phase phase);
     set_type_override_by_type(  uvme_driver#(amiq_eth_packet)::get_type(), amiq_eth_driver::get_type());
     set_type_override_by_type( uvme_monitor#(amiq_eth_packet)::get_type(), amiq_eth_monitor::get_type());
+
     super.build_phase(phase);	
 
     if(this.drv != null) begin

@@ -115,7 +115,7 @@ class network_host extends network_component;
   // Does the packet can be received?
 
   virtual function bit can_receive(amiq_eth_packet txn);
-    `uvme_trace_func_start("can_receive")
+    //`uvme_trace_func_start("can_receive")
     if(txn.destination_address == this.address.mac) begin
 	  this.receive_process(txn); //if can receive it.
  	  return 1;
@@ -132,7 +132,7 @@ class network_host extends network_component;
   // knob function for processing input from network side
 
   virtual function void receive_process(amiq_eth_packet txn);
-    `uvme_trace_func_start("receive_process")
+    //`uvme_trace_func_start("receive_process")
     if(txn.destination_address == this.address.mac) begin
  	  this.counter.incr("RX", 1, "receive_process");
 	end

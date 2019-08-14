@@ -31,7 +31,9 @@ package uvme_pkg;
 
   `include "log/uvme_log.svh"
   `include "log/uvme_log_report_server.svh"
+ 
   `include "common/uvme_common.svh"
+  `include "common/uvme_counter.svh"
 
   `include "layer/uvme_layer_callback.svh"
   `include "layer/uvme_layer_sequence.svh"
@@ -52,6 +54,9 @@ package uvme_pkg;
 
   `include "transaction/uvme_transaction.svh"
 
+  `include "checker/uvme_checker.svh" 
+  `include "checker/uvme_checker_array.svh"
+  
 endpackage : uvme_pkg
 
 `endif

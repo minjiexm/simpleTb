@@ -72,7 +72,7 @@ class amiq_eth_monitor extends uvme_monitor#(amiq_eth_packet);
     forever begin
 	  amiq_eth_packet pkt;
       this.pkt_rcv_fifo.get(pkt);
-	  `uvme_trace_data($psprintf("Pkt Monitor %s recevied a packet %s from pkt_rcv_fifo", this.get_full_name(), pkt.convert2string()))
+	  `uvme_trace_data($psprintf("Recevied a packet %s from pkt_rcv_fifo", pkt.convert2string()))
 	  this.item_collected_port.write(pkt);
     end
 

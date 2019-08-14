@@ -128,9 +128,18 @@ class network_topology_demo extends uvm_component;
 
   virtual task main_phase(uvm_phase phase);
     super.main_phase(phase);
-    
-    this.hosts[8].send_l2_packet(this.hosts[2].address);
-    
+
+    phase.raise_objection(this); //rasing objection
+
+    this.hosts[ 8].send_l2_packet(this.hosts[2].address);
+    this.hosts[ 8].send_l2_packet(this.hosts[2].address);
+    this.hosts[ 8].send_l2_packet(this.hosts[2].address);
+
+    //this.hosts[ 9].send_l2_packet(this.hosts[3].address);
+    //this.hosts[10].send_l2_packet(this.hosts[4].address);
+
+    phase.drop_objection(this); //rasing objection
+
   endtask : main_phase
 
    
