@@ -35,27 +35,26 @@ package uvme_pkg;
   `include "common/uvme_common.svh"
   `include "common/uvme_counter.svh"
 
+  `include "agent/uvme_agent.svh"
+
+  `include "analysis/uvme_analysis_callback.svh"
+  `include "analysis/uvme_analysis_input.svh"
+  `include "analysis/uvme_analysis_output.svh"
+
+  `include "args/uvme_args.svh"
+
+  `include "checker/uvme_checker.svh" 
+  `include "checker/uvme_checker_array.svh"
+
+  `include "event/uvme_event_pool.svh"
+
   `include "layer/uvme_layer_callback.svh"
   `include "layer/uvme_layer_sequence.svh"
   `include "layer/uvme_layer_receiver.svh"
   `include "layer/uvme_layer_input.svh"
   `include "layer/uvme_layer_output.svh"
 
-  `include "analysis/uvme_analysis_callback.svh"
-  `include "analysis/uvme_analysis_input.svh"
-  `include "analysis/uvme_analysis_output.svh"
-
-  `include "event/uvme_event_pool.svh"
-
-  `include "agent/uvme_agent.svh"
-  `include "agent/uvme_agent_env.svh"
-
-  `include "args/uvme_args.svh"
-
   `include "transaction/uvme_transaction.svh"
-
-  `include "checker/uvme_checker.svh" 
-  `include "checker/uvme_checker_array.svh"
   
 endpackage : uvme_pkg
 

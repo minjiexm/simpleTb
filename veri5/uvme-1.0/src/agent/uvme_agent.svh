@@ -41,7 +41,6 @@ class uvme_agent_config extends uvm_object;
     `uvm_field_int(enable_func_cov, UVM_ALL_ON)
   `uvm_object_utils_end
 
-
   //Function: new
   //
   // Constructor
@@ -55,169 +54,89 @@ endclass : uvme_agent_config
 
 
 //------------------------------------------------------------------------------
+// CLASS: uvme_agent_env_config
 //
-// CLASS: uvme_coverage
-//
-// The uvme_coverage class is the class where user should implement function
-// function coverage sample.
+// The uvme_agent_env_config class is the configuration used by uvme_agent_env
+// to controll how many passive and active uvme_agent will be instanced.
 //------------------------------------------------------------------------------
 
-class uvme_coverage #(type T = uvm_sequence_item ) extends uvm_subscriber#(T);
+class uvme_agent_env_config extends uvm_object;
 
-  typedef uvme_coverage#(T) this_type;
+  int unsigned active_num = 0;   //active agent number
+  int unsigned passive_num = 0;   //passvie agent number
 
-  `uvm_component_param_utils(this_type)
+  uvme_agent_config active_cfg[int unsigned];
+  uvme_agent_config passive_cfg[int unsigned];
+
+  `uvm_object_utils_begin(uvme_agent_env_config)
+    `uvm_field_int(active_num, UVM_ALL_ON)
+    `uvm_field_int(passive_num, UVM_ALL_ON)
+  `uvm_object_utils_end
 
   //Function: new
   //
   // Constructor
 
-  function new (string name = "uvme_coverage", uvm_component parent = null);
-    super.new(name, parent);
+  function new (string name = "uvme_agent_env_config");
+    super.new(name);
   endfunction : new
 
-
-  //Function: write
-  //
-  // Convert Write function to this.collect_func_cov
-
-  virtual function void write(T t);
-    this.collect_func_cov(t);
-  endfunction : write
-
-
-  //Function: collect_func_cov
-  //
-  // Collect function coverage
-
-  virtual function void collect_func_cov(T tr);
-    `uvme_no_child_imp_error("collect_func_cov")
-  endfunction : collect_func_cov
-
-
-endclass : uvme_coverage
+endclass : uvme_agent_env_config
 
 
 
 //------------------------------------------------------------------------------
 //
-// CLASS: uvme_monitor
+// CLASS: uvme_agent_env
 //
-// The uvme_monitor class add a analysis port in order to send the trancaction
-// received by monitor out to coverage or other components.
+// The uvme_agent_env class is the subenv which instance many uvme_agent.
+// Both passive and active uvme_agent can be instanced in uvme_agent_env.
 //------------------------------------------------------------------------------
 
-class uvme_monitor #(type T = uvm_sequence_item) extends uvm_monitor;
- 
-  typedef uvme_monitor#(T) this_type;
+class uvme_agent_env #(type AgentT = uvm_component, type VirSeqrT = uvm_component) extends uvm_agent;
 
-  uvm_analysis_port#(T) item_collected_port;  //collect data from DUT
-
-  `uvm_component_param_utils(this_type)
-
-
-  //Function: new
-  //
-  // Constructor
-
-  function new (string name = "uvme_monitor", uvm_component parent = null);
-    super.new(name, parent);
-  endfunction : new
-
-
-  //Function: build_phase
-  // 
-  //Standard UVM build_phase
-  
-  virtual function void build_phase(uvm_phase phase);
-    super.build_phase(phase);
-    this.item_collected_port = new("item_collected_port", this);
-  endfunction : build_phase
-
-
-endclass : uvme_monitor
-
-
-
-//------------------------------------------------------------------------------
-//
-// CLASS: uvme_driver
-//
-// The uvme_driver class is the same as uvm_driver.
-// Just allow user can use factory overwrite to change the type of driver.
-//------------------------------------------------------------------------------
-
-class uvme_driver #(type REQ = uvm_sequence_item, type RSP = REQ) extends uvm_driver#(REQ, RSP);  
-
-  typedef uvme_driver#(REQ, RSP) this_type;
-
-  `uvm_component_param_utils(this_type)
-
-
-  //Function: new
-  //
-  // Constructor
-
-  function new (string name = "uvme_driver", uvm_component parent = null);
-    super.new(name, parent);
-  endfunction : new
-
-endclass : uvme_driver
-
-
-
-//------------------------------------------------------------------------------
-//
-// CLASS: uvme_agent
-//
-// The uvme_agent class is an agent type which will driver data to DUT and receive
-// data from DUT.
-//
-//------------------------------------------------------------------------------
-
-class uvme_agent #(type T = uvm_sequence_item) extends uvm_agent;
-
-  typedef uvme_agent#(T) this_type;
-
+  typedef uvme_agent_env#(AgentT, VirSeqrT) this_type;
 
   //Member: cfg
   //
-  //DUT agent configuration. For example, active/passive mode
+  //agent_env configuration. top level config
 
-  uvme_agent_config             cfg;
-
-  uvme_driver#(T)               drv;
-  uvm_sequencer#(T)             seqr;
+  uvme_agent_env_config   base_cfg;
 
 
-  //Member: mon
+  //Member: vir_seqr
   //
-  //monitor, receive data from DUT
-  
-  uvme_monitor#(T)              mon;
+  //virtual sequencer class, encap all sequence
 
-  
-  //Member: cov
+  VirSeqrT                     vir_seqr;
+
+
+  //Member: active_agent
   //
-  //coverage collector
+  //array to save active agent handle
 
-  uvme_coverage#(T)             cov;   
+  AgentT                       active_agent[];
+
+
+  //Member: passive_agent
+  //
+  //array to save passive agent handle
+
+  AgentT                       passive_agent[];
 
 
   `uvm_component_param_utils_begin(this_type)
-    `uvm_field_object(cfg,   UVM_ALL_ON)
-    `uvm_field_object(drv,   UVM_ALL_ON)
-    `uvm_field_object(mon,   UVM_ALL_ON)
-    `uvm_field_object(seqr,  UVM_ALL_ON)
-    `uvm_field_object(cov,   UVM_ALL_ON)
+    `uvm_field_object(base_cfg,   UVM_ALL_ON)
+    `uvm_field_array_object(active_agent,   UVM_ALL_ON)
+    `uvm_field_array_object(passive_agent,   UVM_ALL_ON)
   `uvm_component_utils_end
 
 
   // Function: new
   //
   // Constructor
-  
-  function new(string name, uvm_component parent);
+
+  function new(string name = "uvme_agent_env", uvm_component parent);
     super.new(name, parent);
   endfunction : new
 
@@ -229,22 +148,41 @@ class uvme_agent #(type T = uvm_sequence_item) extends uvm_agent;
   virtual function void build_phase(uvm_phase phase);
     super.build_phase(phase);
 
-    if(!uvm_config_db #(uvme_agent_config)::get(this, "", "cfg", this.cfg)) begin
-      `uvm_info(this.get_type_name(), $psprintf("[%s] Create uvme_agent_config local", this.get_name()), UVM_DEBUG)
-      this.cfg = uvme_agent_config::type_id::create("cfg");
+    if(this.base_cfg == null) begin //user can create base_cfg before super.build_phase
+      if(!uvm_config_db #(uvme_agent_env_config)::get(this, "", "cfg", this.base_cfg)) begin
+        `uvm_info(this.get_type_name(), $psprintf("[%s] Create uvme_agent_env_config local", this.get_name()), UVM_DEBUG)
+        this.base_cfg = uvme_agent_env_config::type_id::create("cfg");
+      end
+	end
+
+    //void'( this.base_cfg.print() );
+
+    this.vir_seqr = VirSeqrT::type_id::create("vir_seqr", this);
+
+    if(this.base_cfg.active_num > 0) begin
+      this.active_agent = new[this.base_cfg.active_num];
+      this.vir_seqr.active_seqr = new[this.base_cfg.active_num];
     end
 
-    //void'( this.cfg.print() );
-
-    if (this.cfg.active == UVM_ACTIVE) begin
-      this.drv  = uvme_driver#(T)::type_id::create("drv",   this);
-      this.seqr = uvm_sequencer#(T)::type_id::create("seqr",  this);
+    if(this.base_cfg.passive_num > 0) begin
+      this.passive_agent = new[this.base_cfg.passive_num];
+      this.vir_seqr.passive_seqr = new[this.base_cfg.passive_num];
     end
 
-    this.mon = uvme_monitor#(T)::type_id::create("mon",   this);
+    foreach(this.active_agent[idx]) begin
+      string agent_name = uvme_pkg::name_in_array("active_agent", idx);
+      if(this.base_cfg.active_cfg.exists(idx)) begin
+        uvm_config_db#(uvme_agent_config)::set(this, agent_name, "cfg", this.base_cfg.active_cfg[idx] );
+      end
+      this.active_agent[idx] = AgentT::type_id::create(agent_name, this);
+    end
 
-    if(this.cfg.enable_func_cov) begin
-      this.cov = uvme_coverage#(T)::type_id::create("cov", this);
+    foreach(this.passive_agent[idx]) begin
+      string agent_name = uvme_pkg::name_in_array("passive_agent", idx);
+      if(this.base_cfg.passive_cfg.exists(idx)) begin
+        uvm_config_db#(uvme_agent_config)::set(this, agent_name, "cfg", this.base_cfg.active_cfg[idx] );
+      end
+      this.passive_agent[idx] = AgentT::type_id::create(agent_name, this);
     end
 
   endfunction : build_phase
@@ -252,23 +190,24 @@ class uvme_agent #(type T = uvm_sequence_item) extends uvm_agent;
 
   //Function: connect_phase
   //
-  //connect_phase
+  //standard UVM connect_phase
+  //Connect agent's sequence to virtual sequence 
 
   virtual function void connect_phase(uvm_phase phase);
     super.connect_phase(phase);
 
-    if(this.cfg.active == UVM_ACTIVE) begin
-      this.drv.seq_item_port.connect(this.seqr.seq_item_export);
-      this.drv.rsp_port.connect(this.seqr.rsp_export);
+    foreach(this.active_agent[idx]) begin
+      `uvme_cast(this.vir_seqr.active_seqr[idx], this.active_agent[idx].seqr, error)
     end
 
-    if(this.cfg.enable_func_cov) begin
-      this.mon.item_collected_port.connect(this.cov.analysis_export);
+    foreach(this.passive_agent[idx]) begin
+      `uvme_cast(this.vir_seqr.active_seqr[idx], this.passive_agent[idx].seqr, error)
     end
+
   endfunction : connect_phase
 
 
-endclass : uvme_agent
+endclass : uvme_agent_env
 
 
 `endif //UVME_AGENT_SVH

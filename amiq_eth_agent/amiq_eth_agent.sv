@@ -29,7 +29,7 @@
 //------------------------------------------------------------------------------
 
 
-class amiq_eth_agent extends uvme_agent#(amiq_eth_packet);
+class amiq_eth_agent extends amiq_eth_packet_agent_base;
 
   amiq_eth_driver driver;
   amiq_eth_monitor monitor;
@@ -51,8 +51,8 @@ class amiq_eth_agent extends uvme_agent#(amiq_eth_packet);
   //Use factory overwrite to create amiq_eth_driver and monitor
 
   virtual function void build_phase(uvm_phase phase);
-    set_type_override_by_type(  uvme_driver#(amiq_eth_packet)::get_type(), amiq_eth_driver::get_type());
-    set_type_override_by_type( uvme_monitor#(amiq_eth_packet)::get_type(), amiq_eth_monitor::get_type());
+    set_type_override_by_type(  amiq_eth_packet_driver_base::get_type(), amiq_eth_driver::get_type());
+    set_type_override_by_type( amiq_eth_packet_monitor_base::get_type(), amiq_eth_monitor::get_type());
 
     super.build_phase(phase);	
 

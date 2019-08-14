@@ -29,6 +29,13 @@ package amiq_eth_agent_pkg;
 
   `include "amiq_eth_sequence_lib.sv"
 
+  //define all base class
+  //amiq_eth_packet_driver_base
+  //amiq_eth_packet_monitor_base
+  //amiq_eth_packet_agent_base
+  //amiq_eth_packet_agent_env_base
+  `uvme_agent_base_pkg(amiq_eth_packet)
+
   `include "amiq_eth_driver.sv"
   `include "amiq_eth_monitor.sv"
   `include "amiq_eth_agent_config.sv"

@@ -21,7 +21,7 @@
 `define UVME_ANALYSIS_MACROS_SVH
 
 //-----------------------------------------------------------------------------
-// Title: Layer Macros
+// Title: Analysis Input and Ouput Macros
 //
 // These macros are used to define imp class to hook uvme_analysis_input to other
 // classes

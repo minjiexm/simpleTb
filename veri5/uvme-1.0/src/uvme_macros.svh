@@ -23,13 +23,13 @@
 //
 //  Include sub modules' defines
 //
-
-`include "common/uvme_common_defines.svh"
-`include "log/uvme_log_defines.svh"
-`include "layer/uvme_layer_defines.svh"
+`include "agent/uvme_agent_defines.svh"
 `include "analysis/uvme_analysis_defines.svh"
-`include "event/uvme_event_pool_defines.svh"
 `include "args/uvme_args_defines.svh"
 `include "checker/uvme_checker_defines.svh"
+`include "common/uvme_common_defines.svh"
+`include "event/uvme_event_pool_defines.svh"
+`include "layer/uvme_layer_defines.svh"
+`include "log/uvme_log_defines.svh"
 
 `endif  // UVME_MACROS_SVH

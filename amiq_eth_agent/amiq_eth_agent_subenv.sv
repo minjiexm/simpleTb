@@ -64,19 +64,16 @@ endclass : amiq_eth_agent_subenv_config
 //
 // amiq_eth_agent_subenv will instance 4 active and 4 passive agents.
 //------------------------------------------------------------------------------
+class amiq_eth_agent_subenv extends amiq_eth_packet_agent_env_base;
 
-class amiq_eth_agent_subenv extends uvme_agent_env#(amiq_eth_packet);
-
-  typedef uvme_agent#(amiq_eth_packet) agent_base_type;
-  
-  amiq_eth_agent_subenv_config    env_config;
+  amiq_eth_agent_subenv_config    cfg;
 
   amiq_eth_agent active_pkt_agent[];
   amiq_eth_agent passive_pkt_agent[];
 
   //uvm factory declare macro
   `uvm_component_utils_begin(amiq_eth_agent_subenv)
-    `uvm_field_object(env_config, UVM_ALL_ON)
+    `uvm_field_object(cfg, UVM_ALL_ON)
   `uvm_component_utils_end
 
 
@@ -99,12 +96,12 @@ class amiq_eth_agent_subenv extends uvme_agent_env#(amiq_eth_packet);
   virtual function void build_phase(uvm_phase phase);
     set_type_override_by_type(uvme_agent_env_config::get_type(), amiq_eth_agent_subenv_config::get_type());
   
-    factory.set_inst_override_by_type(agent_base_type::get_type(), amiq_eth_active_agent::get_type(), {this.get_full_name(), ".", "active_agent*"});
-    factory.set_inst_override_by_type(agent_base_type::get_type(), amiq_eth_passive_agent::get_type(), {this.get_full_name(), ".", "passive_agent*"});
+    factory.set_inst_override_by_type(amiq_eth_packet_agent_base::get_type(), amiq_eth_active_agent::get_type(), {this.get_full_name(), ".", "active_agent*"});
+    factory.set_inst_override_by_type(amiq_eth_packet_agent_base::get_type(), amiq_eth_passive_agent::get_type(), {this.get_full_name(), ".", "passive_agent*"});
 
     super.build_phase(phase);
 
-    `uvme_cast(this.env_config, this.cfg, fatal)
+    `uvme_cast(this.cfg, this.base_cfg, fatal)
 
     `uvme_cast_array(this.active_pkt_agent, this.active_agent, fatal)
     `uvme_cast_array(this.passive_pkt_agent, this.passive_agent, fatal)

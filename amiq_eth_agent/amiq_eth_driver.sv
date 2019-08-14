@@ -30,7 +30,7 @@
 //
 //------------------------------------------------------------------------------
 
-class amiq_eth_driver extends uvme_driver#(amiq_eth_packet); 
+class amiq_eth_driver extends amiq_eth_packet_driver_base; 
 
 
   //Member: pkt_drv_port

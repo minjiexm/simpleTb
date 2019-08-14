@@ -28,7 +28,7 @@
 //
 //------------------------------------------------------------------------------
 
-class amiq_eth_monitor extends uvme_monitor#(amiq_eth_packet);
+class amiq_eth_monitor extends amiq_eth_packet_monitor_base;
 
 
   //Member: pkt_rcv_fifo
