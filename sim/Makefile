@@ -17,12 +17,13 @@
 ##   permissions and limitations under the License.
 ##------------------------------------------------------------------------------
 
+export WIN_MODE     = 0
 export QUESTA_HOME  = c:/EDATools/Mentor/questasim64_10.6c
 export UVM_INST_DIR = $(shell pwd)/..
+export BITS         = 64
 
 export PROJ_ROOT    = $(shell pwd)/..
 export MODEL_HOME   = $(QUESTA_HOME)
-export BITS         = 64
 export UVM_VERSION  = 1.1d
 export UVM_HOME     = $(UVM_INST_DIR)/uvm-$(UVM_VERSION)
 
@@ -39,13 +40,17 @@ readme:
 	@echo " README                                                               "
 	@echo "----------------------------------------------------------------------"
 	@echo "Before start to run demo test case                                    "
-	@echo "there are two env variables need to be set  :                         "
+	@echo "there are 4 env variables need to be set  :                           "
+	@echo "  WIN_MODE     : Indicate whether OS is windows or not.               "
+	@echo "                 If OS is Windows, Please set WIN_MODE to 1.          "
 	@echo "  QUESTA_HOME  : the questa sim install path.                         "
 	@echo "                 For example "c:/EDATools/Mentor/questasim64_10.6c"   "
 	@echo "  UVM_INST_DIR : Upper level Path of UVM lib.                         "
 	@echo "                 For exmaple "c:/EDATools/UVM"                        "
 	@echo "                 In this simple TB, we are using uvm-1.1d             "
 	@echo "                 So UVM_HOME will be $(UVM_INST_DIR)/uvm-1.1d         "
+	@echo "  BTIS         : Compile mode. For Linux suport 32 and 64 bits mode.  "
+	@echo "                 For Windows, right now only support 64bits mode.     "
 	@echo "                                                                      "
 	@echo "  If you don't have any pre-install UVM libs.                         "
 	@echo "  Please use below command to download:                               "
@@ -53,8 +58,8 @@ readme:
 	@echo "  This will clone UVM 1.1d into $(PROJ_ROOT)/uvm-1.1d                 "
 	@echo "  By default, UVM_INST_DIR already set to $(PROJ_ROOT)                "
 	@echo "                                                                      "
-	@echo "  Please modify line 1 and 2 of this file                             " 
-	@echo "  to point them to the right path in your env.                        "
+	@echo "  Please modify line 1 to 4 of this file                              " 
+	@echo "  to set them to match to your env.                                   "
 	@echo "                                                                      "
 	@echo "----------------------------------------------------------------------"
 	@echo "Below is the run commands to run the demo tests:                      "
@@ -73,6 +78,7 @@ readme:
 	@echo "    make SIM_ARGS=+UVM_VERBOSITY [target(s)]                          "
 	@echo "  for example :                                                       "
 	@echo "    make SIM_ARGS=+UVM_VERBOSITY=UVM_DEBUG topology                   "
+	@echo "----------------------------------------------------------------------"
 
 
 topology:
