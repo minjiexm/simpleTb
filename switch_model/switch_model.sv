@@ -48,20 +48,20 @@ class switch_model extends uvm_agent;
 
   switch_model_auto_init auto_init;
 
-  typedef `uvme_analysis_input_imp(amiq_eth_packet, switch_model, packet_processing) sw_input_type;
+  typedef `uvme_analysis_input_imp(veri5_eth_packet, switch_model, packet_processing) sw_input_type;
 
   //Member: in_port[]
   //
-  //Receive amiq_eth_packet from actie Agent.driver
+  //Receive veri5_eth_packet from actie Agent.driver
   
   sw_input_type                       in_port[];
   
 
   //Member: out_port[]
   //
-  //Send amiq_eth_packet to Passive Agent.monitor
+  //Send veri5_eth_packet to Passive Agent.monitor
 
-  uvme_analysis_output#(amiq_eth_packet) out_port[];
+  uvme_analysis_output#(veri5_eth_packet) out_port[];
 
 
   //uvm factory declare macro
@@ -133,12 +133,14 @@ class switch_model extends uvm_agent;
   // - src_pidx : port index the packet received
   // Once switch received packet from in_port will trigger packetprocessing
  
-  virtual function void packet_processing(amiq_eth_packet pkt, int unsigned src_pidx);
+  virtual function void packet_processing(veri5_eth_packet pkt, int unsigned src_pidx);
+    veri5_eth_packet_l2 l2_pkt;	
     int unsigned dst_pidx; //destination port index
     `uvm_info(this.get_type_name(), $psprintf("[%s] Ingeress received a packet from Port %0d", this.get_name(), src_pidx), UVM_LOW)
+    `uvme_cast(l2_pkt, pkt, error)
 
     //DA lookup;
-    if( this.mac_table.lookup(pkt.destination_address, dst_pidx) ) begin
+    if( this.mac_table.lookup(l2_pkt.get_mac_da(), dst_pidx) ) begin
 	  `uvme_trace_data($psprintf("[packet_proc] Unicast to Port : %0d  Packet : %s", dst_pidx, pkt.convert2string()))
       this.out_port[dst_pidx].send(pkt);
     end
@@ -149,7 +151,7 @@ class switch_model extends uvm_agent;
 
     //SA lookup
     //update src port in mac table
-    this.mac_table.lookup_learn(pkt.source_address, src_pidx);
+    this.mac_table.lookup_learn(l2_pkt.get_mac_sa, src_pidx);
 
   endfunction : packet_processing
 
@@ -161,7 +163,7 @@ class switch_model extends uvm_agent;
   // flood : L2 Broadcast
   //
 
-  virtual function void flood(amiq_eth_packet pkt, int unsigned src_pidx);
+  virtual function void flood(veri5_eth_packet pkt, int unsigned src_pidx);
     foreach(this.out_port[port_idx]) begin
       if(port_idx != src_pidx) begin
 	    `uvme_trace_data($psprintf("[flood] Flood to Port : %0d  Packet : %s", port_idx, pkt.convert2string()))

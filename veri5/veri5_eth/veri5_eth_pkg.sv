@@ -17,32 +17,29 @@
 //   the License for the specific language governing
 //   permissions and limitations under the License.
 //----------------------------------------------------------------------
+`ifndef VERI5_ETH_PKG_SV
+`define VERI5_ETH_PKG_SV
 
-`ifndef NETWORK_PKG_SV
-`define NETWORK_PKG_SV
 
-`include "veri5_eth_pkg.sv"
-
-package network_pkg;
+package veri5_eth_pkg;
 
   `include "uvm_macros.svh"
-  import uvm_pkg::*;
 
-  `include "uvme_macros.svh"
+  import uvm_pkg::*;
   import uvme_pkg::*;
 
-  import veri5_eth_pkg::*;
+  `include "veri5_eth_protocol_defines.svh"
+  `include "veri5_eth_defines.svh"
 
-  `include "network_macros.svh"
+  `include "veri5_eth_types.svh"
+  `include "veri5_eth_hdr_l2.svh"    //Layer2 header
+  `include "veri5_eth_hdr_ipv4.svh"
 
-  `include "network_component.svh"
-  `include "network_address.svh"
-  `include "network_host.svh"
-  `include "network_port.svh"
-  `include "network_switch.svh"
-  `include "network_switch_driver.svh"
+  `include "veri5_eth_packet.svh"     //payload packet
+  `include "veri5_eth_packet_l2.svh"  //Layer2 Packet
+  `include "veri5_eth_packet_ipv4.svh"
+  
+endpackage : veri5_eth_pkg
 
-endpackage : network_pkg
 
-`endif
-
+`endif // VERI5_ETH_PKG_SV

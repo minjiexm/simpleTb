@@ -44,8 +44,8 @@ typedef class network_host;
 
 class network_host extends network_component;
 
-  typedef `uvme_layer_input_imp(amiq_eth_packet, network_host, receive_process) network_input_type;
-  typedef uvme_layer_output#(amiq_eth_packet) network_output_type;
+  typedef `uvme_layer_input_imp(veri5_eth_packet, network_host, receive_process) network_input_type;
+  typedef uvme_layer_output#(veri5_eth_packet) network_output_type;
 
   // Member: network_output
   //
@@ -114,9 +114,13 @@ class network_host extends network_component;
   //
   // Does the packet can be received?
 
-  virtual function bit can_receive(amiq_eth_packet txn);
+  virtual function bit can_receive(veri5_eth_packet txn);
     //`uvme_trace_func_start("can_receive")
-    if(txn.destination_address == this.address.mac) begin
+	veri5_eth_address destination_address;
+	veri5_eth_packet_l2 l2_pkt;
+	`uvme_cast(l2_pkt, txn, error)
+    destination_address = l2_pkt.get_mac_da();
+    if(destination_address == this.address.mac) begin
 	  this.receive_process(txn); //if can receive it.
  	  return 1;
 	end
@@ -131,13 +135,17 @@ class network_host extends network_component;
   //
   // knob function for processing input from network side
 
-  virtual function void receive_process(amiq_eth_packet txn);
+  virtual function void receive_process(veri5_eth_packet txn);
     //`uvme_trace_func_start("receive_process")
-    if(txn.destination_address == this.address.mac) begin
+    veri5_eth_address destination_address;
+	veri5_eth_packet_l2 l2_pkt;
+	`uvme_cast(l2_pkt, txn, error)
+    destination_address = l2_pkt.get_mac_da();
+    if(destination_address == this.address.mac) begin
  	  this.counter.incr("RX", 1, "receive_process");
 	end
 	else begin
-	  `uvme_trace_data($psprintf("[receive_process] Host %s received a packet %s with wrong mac address 0x%0h and will drop it", this.get_name(), txn.convert2string(), txn.destination_address))
+	  `uvme_trace_data($psprintf("[receive_process] Host %s received a packet %s with wrong mac address 0x%0h and will drop it", this.get_name(), txn.convert2string(), destination_address))
  	  this.counter.incr("DROP", 1, "receive_process");
 	end
   endfunction : receive_process
@@ -148,10 +156,10 @@ class network_host extends network_component;
   // send out a L2 Packet from host to network
 
   virtual task send_l2_packet(network_address dest_addr);
-    amiq_eth_packet l2_pkt = amiq_eth_packet::type_id::create("l2_pkt");
+    veri5_eth_packet_l2 l2_pkt = veri5_eth_packet_l2::type_id::create("l2_pkt");
 	void'( l2_pkt.randomize() );
-    l2_pkt.destination_address = dest_addr.mac;
-    l2_pkt.source_address = this.address.mac;
+	l2_pkt.set_mac_sa(this.address.mac);
+	l2_pkt.set_mac_da(dest_addr.mac);
     `uvme_trace_data($psprintf("[send_l2_packet] Host %s send a L2 packet %s to Address 0x%0h", this.get_name(), l2_pkt.convert2string(), dest_addr.mac))
 	this.network_output.send(l2_pkt);
 	this.counter.incr("TX", 1, "send_l2_packet");

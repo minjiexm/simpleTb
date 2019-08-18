@@ -361,11 +361,23 @@
 //
 //| `uvme_error(msg)
 //
-// Report error message when the function should not be called by the 
-// parent class and should be implement by a derived class. 
+// Report error message
 
 `define uvme_error(msg) \
   `uvm_error(this.get_type_name(), $psprintf("[%s] %s", this.get_name(), msg))
+
+
+
+
+//-----------------------------------------------------------------------------
+// MACRO: `uvme_fatal
+//
+//| `uvme_fatal(msg)
+//
+// Report fatal message
+
+`define uvme_fatal(msg) \
+  `uvm_fatal(this.get_type_name(), $psprintf("[%s] %s", this.get_name(), msg))
 
 
 

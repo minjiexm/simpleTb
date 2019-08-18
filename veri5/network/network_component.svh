@@ -71,7 +71,7 @@ class network_component extends uvm_component;
   //
   //Return uvme_transaction_input of giving index
 
-  virtual function uvme_layer_input#(amiq_eth_packet) get_ds_input(int unsigned port_idx = 0);
+  virtual function uvme_layer_input#(veri5_eth_packet) get_ds_input(int unsigned port_idx = 0);
     `uvme_no_child_imp_error("get_network_input")
 	return null;
   endfunction : get_ds_input
@@ -81,7 +81,7 @@ class network_component extends uvm_component;
   //
   //Return uvme_transaction_output of giving index
 
-  virtual function uvme_layer_output#(amiq_eth_packet) get_ds_output(int unsigned port_idx = 0);
+  virtual function uvme_layer_output#(veri5_eth_packet) get_ds_output(int unsigned port_idx = 0);
     `uvme_no_child_imp_error("get_network_output")
 	return null;
   endfunction : get_ds_output
@@ -91,7 +91,7 @@ class network_component extends uvm_component;
   //
   //Get the downstream neighbour through a network_output
 
-  virtual function network_component get_ds_neighour(input uvme_layer_output#(amiq_eth_packet) network_output);
+  virtual function network_component get_ds_neighour(input uvme_layer_output#(veri5_eth_packet) network_output);
 	uvm_component next_input;
 	network_component neighbour;
 	
@@ -119,7 +119,7 @@ class network_component extends uvm_component;
   //
   // Does the packet can be received?
 
-  virtual function bit can_receive(amiq_eth_packet txn);
+  virtual function bit can_receive(veri5_eth_packet txn);
     `uvme_no_child_imp_error("can_receive")
 	return 0;
   endfunction : can_receive

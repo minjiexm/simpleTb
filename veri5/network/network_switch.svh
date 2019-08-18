@@ -83,9 +83,9 @@ typedef class network_switch;
 
 class network_switch extends network_component;
 
-  typedef `uvme_layer_input_imp(amiq_eth_packet, network_switch, ds_input_process) ds_input_type;
-  typedef `uvme_layer_input_imp(amiq_eth_packet, network_switch, us_input_process) us_input_type;
-  typedef  uvme_layer_output#(amiq_eth_packet) network_output_type;
+  typedef `uvme_layer_input_imp(veri5_eth_packet, network_switch, ds_input_process) ds_input_type;
+  typedef `uvme_layer_input_imp(veri5_eth_packet, network_switch, us_input_process) us_input_type;
+  typedef  uvme_layer_output#(veri5_eth_packet) network_output_type;
 
   // Member: cfg
   //
@@ -174,7 +174,7 @@ class network_switch extends network_component;
   //Implment function which receive packets from downstream_port
 
   virtual task ds_input_process(uvm_sequence_item txn, int unsigned port_idx);
-    amiq_eth_packet pkt;
+    veri5_eth_packet pkt;
 	`uvme_cast(pkt, txn, error)
 
     `uvme_info($psprintf("[ds_input_process] receive a packet %s", pkt.convert2string()), UVM_LOW)
@@ -189,7 +189,7 @@ class network_switch extends network_component;
   //Implment function which receive packets from upstream_port
 
   virtual task us_input_process(uvm_sequence_item txn);
-    amiq_eth_packet pkt;
+    veri5_eth_packet pkt;
 	`uvme_cast(pkt, txn, error)
     void'(this.can_receive(pkt));  //broadcast the packet to all downstream components.
   endtask : us_input_process
@@ -212,7 +212,7 @@ class network_switch extends network_component;
   //
   //Return the downstream uvme_layer_input of giving index
 
-  virtual function uvme_layer_input#(amiq_eth_packet) get_ds_input(int unsigned port_idx = 0);
+  virtual function uvme_layer_input#(veri5_eth_packet) get_ds_input(int unsigned port_idx = 0);
     if(port_idx <= ds_input.size()) begin
 	  return this.ds_input[port_idx];
 	end
@@ -227,7 +227,7 @@ class network_switch extends network_component;
   //
   //Return the downstream uvme_layer_output of giving index
 
-  virtual function uvme_layer_output#(amiq_eth_packet) get_ds_output(int unsigned port_idx = 0);
+  virtual function uvme_layer_output#(veri5_eth_packet) get_ds_output(int unsigned port_idx = 0);
     if(port_idx <= ds_output.size()) begin
 	  return this.ds_output[port_idx];
 	end
@@ -262,7 +262,7 @@ class network_switch extends network_component;
   // Does the packet can be received?
   // If one of the ds neighbour can received the packet, means switch should receive it.
 
-  virtual function bit can_receive(amiq_eth_packet txn);
+  virtual function bit can_receive(veri5_eth_packet txn);
     network_component ds_neighbour[$];
     can_receive = 0;
     `uvme_trace_func_start("can_receive")

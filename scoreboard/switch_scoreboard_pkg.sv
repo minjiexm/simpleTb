@@ -25,7 +25,7 @@ package switch_scoreboard_pkg;
 
   import uvm_pkg::*;
   import uvme_pkg::*;
-  import amiq_eth_pkg::*;
+  import veri5_eth_pkg::*;
 
   `include "switch_scoreboard_checker.sv"
   `include "switch_scoreboard.sv"

@@ -26,7 +26,7 @@
 //Top level switch scoreboad
 //
 
-class switch_scoreboard_checker extends uvme_checker#(amiq_eth_packet);
+class switch_scoreboard_checker extends uvme_checker#(veri5_eth_packet);
 
 
   //Register with factory

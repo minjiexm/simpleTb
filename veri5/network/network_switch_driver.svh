@@ -117,7 +117,7 @@ class network_switch_driver extends network_switch;
   //
   //Return the downstream uvme_layer_input of giving index
 
-  virtual function uvme_layer_input#(amiq_eth_packet) get_ds_input(int unsigned port_idx = 0);
+  virtual function uvme_layer_input#(veri5_eth_packet) get_ds_input(int unsigned port_idx = 0);
     if(port_idx <= this.ports.size()) begin
       return this.ports[port_idx].get_ds_input();
     end
@@ -132,7 +132,7 @@ class network_switch_driver extends network_switch;
   //
   //Return the downstream uvme_layer_output of giving index
 
-  virtual function uvme_layer_output#(amiq_eth_packet) get_ds_output(int unsigned port_idx = 0);
+  virtual function uvme_layer_output#(veri5_eth_packet) get_ds_output(int unsigned port_idx = 0);
     if(port_idx <= this.ports.size()) begin
       return this.ports[port_idx].get_ds_output();
     end

@@ -18,32 +18,30 @@
 //   permissions and limitations under the License.
 //------------------------------------------------------------------------------
 
-import uvm_pkg::*;
+`ifndef  VERI5_ETH_AGENT_PKG_SV
+`define  VERI5_ETH_AGENT_PKG_SV
 
-`include "uvme_pkg.sv"
-import uvme_pkg::*;
+package veri5_eth_agent_pkg;
 
-`include "veri5_eth_pkg.sv"
-import veri5_eth_pkg::*;
+  import uvm_pkg::*;
+  import uvme_pkg::*;
+  import veri5_eth_pkg::*;
 
-`include "veri5_eth_agent_pkg.sv"
-import veri5_eth_agent_pkg::*;
+  `include "veri5_eth_sequence_lib.sv"
 
-`include "network_pkg.sv"
-import network_pkg::*;
+  //define all base class
+  //veri5_eth_packet_driver_base
+  //veri5_eth_packet_monitor_base
+  //veri5_eth_packet_agent_base
+  //veri5_eth_packet_agent_env_base
+  `uvme_agent_base_pkg(veri5_eth_packet)
 
-`include "amiq_eth_pkg.sv"
-import amiq_eth_pkg::*;
+  `include "veri5_eth_driver.sv"
+  `include "veri5_eth_monitor.sv"
+  `include "veri5_eth_agent_config.sv"
+  `include "veri5_eth_agent.sv"
+  `include "veri5_eth_agent_subenv.sv"
 
-`include "amiq_eth_agent_pkg.sv"
-import amiq_eth_agent_pkg::*;
+endpackage : veri5_eth_agent_pkg
 
-`include "switch_model_pkg.sv"
-import switch_model_pkg::*;
-
-`include "switch_scoreboard_pkg.sv"
-import switch_scoreboard_pkg::*;
-
-`include "network_topology_demo.svh"
-
-`include "network_test.svh"
+`endif //VERI5_ETH_AGENT_PKG_SV

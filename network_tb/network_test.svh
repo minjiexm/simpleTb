@@ -1,4 +1,3 @@
-//
 //------------------------------------------------------------------------------
 //   Copyright 2019 Veri5.org
 //   All Rights Reserved Worldwide
@@ -23,7 +22,7 @@
 
 import network_pkg::*;
 import switch_scoreboard_pkg::*;
-
+import veri5_eth_pkg::*;
 
 //Class: network_test_base
 //
@@ -57,7 +56,7 @@ class network_test_base extends uvm_test;
   //
   //subenv of drive and mointor agents
  
-  amiq_eth_agent_subenv  pkt_agent_subenv;
+  veri5_eth_agent_subenv  pkt_agent_subenv;
 
   //Register with factory
   `uvm_component_utils(network_test_base)
@@ -95,7 +94,7 @@ class network_test_base extends uvm_test;
     this.sb = switch_scoreboard::type_id::create("sb", this);
 
 	//create agent which drive and receive data from DUT
-    this.pkt_agent_subenv = amiq_eth_agent_subenv::type_id::create("pkt_agent_subenv", this);
+    this.pkt_agent_subenv = veri5_eth_agent_subenv::type_id::create("pkt_agent_subenv", this);
 
  endfunction : build_phase
 
@@ -154,8 +153,6 @@ endclass : network_test_base
 
 
 
-
-
 //Class: network_test_sequence
 //
 //Use triditional sequence way to send a packet
@@ -188,7 +185,7 @@ class network_test_sequence extends network_test_base;
     #1000;
     
     begin
-      amiq_eth_seq_lib_default demo_seq = amiq_eth_seq_lib_default::type_id::create("demo_seq");
+      veri5_eth_seq_lib_default demo_seq = veri5_eth_seq_lib_default::type_id::create("demo_seq");
       demo_seq.start(this.pkt_agent_subenv.active_agent[0].seqr);
     end
 
@@ -256,6 +253,120 @@ class network_test_topology extends network_test_base;
 
 
 endclass : network_test_topology
+
+
+
+
+//Test for debug veri5 packet
+
+class network_test_veri5_packet extends uvm_test;
+
+  //Register with factory
+  `uvm_component_utils(network_test_veri5_packet)
+
+  //Function: new
+  //
+  //Constructor
+
+  function new(string name = "network_test_veri5_packet", uvm_component parent = null);
+    super.new(name, parent);
+  endfunction : new
+
+
+  //Function: build_phase
+  //
+  //Build phase - Construct the cfg and env class using factory
+  //Get the virtual interface handle from Test and then set it config db for the env component
+  
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+	`uvme_set_report_server
+  endfunction : build_phase
+
+
+
+  //Function: connect_phase
+  //
+  //Standard UVM connect_phase
+
+  function void connect_phase(uvm_phase phase);
+    super.connect_phase(phase);
+  endfunction : connect_phase
+
+
+
+  //Function: end_of_elaboration_phase
+  //
+  //Standard UVM end_of_elaboration_phase
+
+  function void end_of_elaboration_phase(uvm_phase phase);
+    super.end_of_elaboration_phase(phase);
+  endfunction : end_of_elaboration_phase
+  
+  
+  
+  //Function: main_phase
+  //
+  //Standard UVM main_phase
+
+  task main_phase(uvm_phase phase);
+	veri5_eth_packet_ipv4 ipv4_pkt;
+	byte unsigned byte_packed_data[];
+	
+    super.main_phase(phase);
+	
+	ipv4_pkt = veri5_eth_packet_ipv4::type_id::create("ipv4_packet");
+	$display("JIEMIN --------------------------------->");
+	void'( ipv4_pkt.randomize() );
+	`uvme_header_randomize_with(ipv4_pkt, PAYLOAD, uvme_payload_header, { length == 64;})
+	ipv4_pkt.print();
+	`uvme_info($psprintf("ipv4_pkt %s", ipv4_pkt.convert2string()), UVM_NONE)
+	ipv4_pkt.update_crc();
+	
+	//TEST Pack
+	void'( ipv4_pkt.pack_bytes(byte_packed_data) );    //pack method
+	
+    //foreach(byte_packed_data[i]) begin
+    //  `uvm_info("PACK",$sformatf("byte_packed_data[%0d] = 0x%0h",i,byte_packed_data[i]), UVM_LOW)
+    //end
+
+    //TEST Unpack
+	//begin
+	//  veri5_eth_packet_ipv4 ipv4_pkt, ipv4_pkt_1;
+    //  ipv4_pkt_1 =  veri5_eth_packet_ipv4::type_id::create("ipv4_pkt_1");
+	//  void'( ipv4_pkt_1.unpack_bytes(byte_packed_data) );
+    //  ipv4_pkt_1.print();
+    //end
+	
+	//TEST convert2string
+	begin
+	  veri5_eth_packet pkt = veri5_eth_packet::type_id::create("pkt");
+	  void'( pkt.randomize() );
+	  pkt.print();
+	  `uvme_info($psprintf("pkt convert2string %s", pkt.convert2string()), UVM_NONE)
+
+      begin
+	  veri5_eth_packet pkt1;
+      `uvme_cast(pkt1, ipv4_pkt.clone(), error);
+	  pkt1.print();
+	  `uvme_info($psprintf("pkt1 convert2string %s", pkt1.convert2string()), UVM_NONE)
+	  end
+	end
+	
+  endtask : main_phase
+
+
+  
+  //Function: report_phase
+  //
+  //Standard UVM report_phase
+
+  function void report_phase(uvm_phase phase);
+    super.report_phase(phase);
+  endfunction : report_phase
+
+  
+endclass : network_test_veri5_packet
 
 
 

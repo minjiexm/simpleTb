@@ -103,7 +103,8 @@ class uvme_layer_input #(type T = uvm_sequence_item) extends uvm_component;
     T data;
     uvme_ei_enum ei_action = UVME_EI_NONE;
     `uvme_cast(data, txn.clone(), fatal); //create a local copy for further use
-    `uvme_trace_data($psprintf("[receive_knob] Received a transaction %s", data.convert2string()))
+	`uvme_trace_data($psprintf("[receive_knob] Received txn type %s %s", txn.get_type(), txn.convert2string()))
+    `uvme_trace_data($psprintf("[receive_knob] Clone txn to transaction type %s %s", data.get_type(), data.convert2string()))
     `uvm_do_callbacks(this_input_type, this_cb_type, error_inject_cbF(data, ei_action))
 
     if(ei_action != UVME_EI_DROP) begin

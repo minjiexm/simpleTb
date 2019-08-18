@@ -46,9 +46,9 @@ typedef class network_port;
 
 class network_port extends network_component;
 
-  typedef `uvme_layer_input_imp(amiq_eth_packet, network_port, network_input_process) network_input_type;
-  typedef uvme_layer_output#(amiq_eth_packet) this_output_type;
-  typedef uvm_tlm_analysis_fifo#(amiq_eth_packet) this_fifo_type;
+  typedef `uvme_layer_input_imp(veri5_eth_packet, network_port, network_input_process) network_input_type;
+  typedef uvme_layer_output#(veri5_eth_packet) this_output_type;
+  typedef uvm_tlm_analysis_fifo#(veri5_eth_packet) this_fifo_type;
 
 
   network_input_type network_input;
@@ -96,7 +96,7 @@ class network_port extends network_component;
   // knob function for processing input from agent side
 
 
-  virtual task agent_input_process(amiq_eth_packet txn);
+  virtual task agent_input_process(veri5_eth_packet txn);
     this.network_output.send(txn);
   endtask : agent_input_process
 
@@ -105,9 +105,9 @@ class network_port extends network_component;
   //
   // knob function for processing input from network side
 
-  virtual task network_input_process(amiq_eth_packet txn);
+  virtual task network_input_process(veri5_eth_packet txn);
     //here just pass network packet to agent output
-	amiq_eth_packet txn4send;
+	veri5_eth_packet txn4send;
 	$cast(txn4send, txn); 	//need clone?
  	this.agent_output.send(txn4send);
   endtask : network_input_process
@@ -118,7 +118,7 @@ class network_port extends network_component;
   //
   //Return the downstream uvme_layer_input of giving index
 
-  virtual function uvme_layer_input#(amiq_eth_packet) get_ds_input(int unsigned port_idx = 0);
+  virtual function uvme_layer_input#(veri5_eth_packet) get_ds_input(int unsigned port_idx = 0);
     if(port_idx != 0) begin
 	  `uvme_error($psprintf("[get_ds_input] port_idx %s should always be 0 for %s", port_idx, this.get_type_name()))
 	end
@@ -130,7 +130,7 @@ class network_port extends network_component;
   //
   //Return the downstream uvme_layer_output of giving index
 
-  virtual function uvme_layer_output#(amiq_eth_packet) get_ds_output(int unsigned port_idx = 0);
+  virtual function uvme_layer_output#(veri5_eth_packet) get_ds_output(int unsigned port_idx = 0);
     if(port_idx != 0) begin
       `uvme_error($psprintf("[get_ds_output] port_idx %s should always be 0 for %s", port_idx, this.get_type_name()))
     end
@@ -170,7 +170,7 @@ class network_port extends network_component;
   
   virtual task run_phase(uvm_phase phase);
     forever begin
-	  amiq_eth_packet pkt;
+	  veri5_eth_packet pkt;
 	  this.agent_input_fifo.get(pkt); //blocking
 	  this.agent_input_process(pkt);
 	end

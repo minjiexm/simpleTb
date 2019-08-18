@@ -25,7 +25,7 @@ package switch_model_pkg;
 import uvm_pkg::*;
 import uvme_pkg::*;
 import network_pkg::*;
-import amiq_eth_pkg::*;
+import veri5_eth_pkg::*;
 
 `include "switch_mac_table.sv"
 `include "switch_model_config.sv"

@@ -31,5 +31,6 @@
 `include "event/uvme_event_pool_defines.svh"
 `include "layer/uvme_layer_defines.svh"
 `include "log/uvme_log_defines.svh"
+`include "transaction/uvme_transaction_defines.svh"
 
 `endif  // UVME_MACROS_SVH
