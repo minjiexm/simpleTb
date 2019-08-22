@@ -60,7 +60,6 @@ class veri5_eth_packet extends uvme_transaction;
   endfunction : payload_size_adjust
 
 
-
   //unpack the entire Ethernet packet
   //@param packer - the packer used by this function
   virtual function void do_unpack(uvm_packer packer);

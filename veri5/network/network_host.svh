@@ -117,8 +117,18 @@ class network_host extends network_component;
   virtual function bit can_receive(veri5_eth_packet txn);
     //`uvme_trace_func_start("can_receive")
 	veri5_eth_address destination_address;
-	veri5_eth_packet_l2 l2_pkt;
-	`uvme_cast(l2_pkt, txn, error)
+    veri5_eth_packet eth_pkt;
+    veri5_eth_packet_l2 l2_pkt;
+
+	`uvme_cast(eth_pkt, txn, fatal)
+	  
+	l2_pkt = this.parse_l2_packet(eth_pkt);
+	  
+    if(l2_pkt == null) begin
+	  `uvme_error($psprintf("[receive_process] host %s can only receive L2 Packets!", this.get_full_name()))
+	  return 0;
+    end
+
     destination_address = l2_pkt.get_mac_da();
     if(destination_address == this.address.mac) begin
 	  this.receive_process(txn); //if can receive it.
@@ -138,9 +148,20 @@ class network_host extends network_component;
   virtual function void receive_process(veri5_eth_packet txn);
     //`uvme_trace_func_start("receive_process")
     veri5_eth_address destination_address;
-	veri5_eth_packet_l2 l2_pkt;
-	`uvme_cast(l2_pkt, txn, error)
+    veri5_eth_packet eth_pkt;
+    veri5_eth_packet_l2 l2_pkt;
+
+	`uvme_cast(eth_pkt, txn, fatal)
+	  
+	l2_pkt = this.parse_l2_packet(eth_pkt);
+	  
+    if(l2_pkt == null) begin
+	  `uvme_fatal($psprintf("[receive_process] host %s can only receive L2 Packets!", this.get_full_name()))
+	  return;
+    end
+	
     destination_address = l2_pkt.get_mac_da();
+
     if(destination_address == this.address.mac) begin
  	  this.counter.incr("RX", 1, "receive_process");
 	end
@@ -165,6 +186,30 @@ class network_host extends network_component;
 	this.counter.incr("TX", 1, "send_l2_packet");
   endtask : send_l2_packet
 
+
+  //Function: parse_l2_packet
+  //
+  // Parse L2 Header from Packet
+  //
+
+  virtual function veri5_eth_packet_l2 parse_l2_packet(veri5_eth_packet pkt);
+    veri5_eth_packet_l2 l2_pkt;
+	int unsigned l2_pkt_length = pkt.get_hdr_length();
+
+	if(l2_pkt_length < `VERI5_ETH_HDR_L2_LEN) begin
+	  `uvme_error($psprintf("[parse_l2_packet] Input packet lenght %0d less than ethernet l2 header length %0d, Can not parse layer 2 header!", l2_pkt_length, `VERI5_ETH_HDR_L2_LEN))
+	end
+	
+	l2_pkt = veri5_eth_packet_l2::type_id::create("l2_pkt");
+	
+	begin
+	  bit [7:0] data[];
+	  void'( pkt.pack_bytes(data) );
+	  void'( l2_pkt.unpack_bytes(data) );
+	end
+	
+	return l2_pkt;
+  endfunction : parse_l2_packet
 
 
   //Function: get_all_ds_neighour

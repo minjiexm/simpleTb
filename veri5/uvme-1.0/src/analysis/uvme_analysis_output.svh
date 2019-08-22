@@ -115,7 +115,7 @@ class uvme_analysis_output #(type T = uvm_sequence_item) extends uvm_component;
 
 
 
-  // Function : get_neighbour
+  // Function : get_inner_fifo
   //
   // Get connected neighbour
  

@@ -125,4 +125,40 @@ typedef enum {
   end
 
 
+//-----------------------------------------------------------------------------
+// MACRO: `uvme_queue2array
+//
+//| `uvme_queue2array(queue, array)
+//
+// Copy queue content to an dynamic array.
+// All content in dynamic array will be deleted before copy.
+//-----------------------------------------------------------------------------
+
+`define uvme_queue2array(queue, array) \
+  begin \
+    array.delete(); \
+	array = new[queue.size()]; \
+	foreach(array[idx]) begin \
+      array[idx] = queue[idx]; \
+    end \
+  end
+  
+//-----------------------------------------------------------------------------
+// MACRO: `uvme_array2queue
+//
+//| `uvme_array2queue(array, queue)
+//
+// Copy dynamic array content to an array.
+// All content in queue will be deleted before copy.
+//-----------------------------------------------------------------------------
+  
+`define uvme_array2queue(array, queue) \
+  begin \
+    queue = {}; \
+	foreach(array[idx]) begin \
+      queue.push_back(array[idx]); \
+    end \
+  end
+ 
+
 `endif  // UVME_COMMON_DEFINES_SVH

@@ -1,3 +1,4 @@
+
 //
 //----------------------------------------------------------------------
 //   Copyright 2019 Veri5.org
@@ -61,6 +62,7 @@ class uvme_layer_header extends uvm_sequence_item;
 	 else
 	   return 0;
   endfunction : isolated
+
 
   //Function: insert_back
   //
@@ -306,8 +308,8 @@ class uvme_payload_header extends uvme_layer_header;
 
   //UVM factory macro
   `uvm_object_utils_begin(uvme_payload_header)
-    `uvm_field_array_int(data, UVM_ALL_ON)
-    `uvm_field_int(length, UVM_ALL_ON)
+    `uvm_field_array_int(data, UVM_ALL_ON|UVM_NOPACK)
+    `uvm_field_int(length, UVM_ALL_ON|UVM_NOPACK)
   `uvm_object_utils_end
 
   // Function: new
@@ -381,6 +383,18 @@ class uvme_payload_header extends uvme_layer_header;
   virtual function string get_hdr_name();
     return "PAYLOAD";
   endfunction : get_hdr_name
+
+
+
+  //Function: get_hdr_length
+  //
+  //Return the bytes length of the header
+  
+  virtual function int unsigned get_hdr_length();
+    this.length = this.data.size();
+	this.m_hdr_len_in_bytes = this.length;
+    return m_hdr_len_in_bytes;
+  endfunction : get_hdr_length
 
 
 endclass : uvme_payload_header
@@ -487,7 +501,7 @@ class uvme_transaction extends uvm_sequence_item;
   //Return the bytes length of the header
   
   virtual function int unsigned get_hdr_length();
-    int unsigned hdr_len_in_bytes;	
+    int unsigned hdr_len_in_bytes = 0;
     foreach(this.m_header_stack[hidx]) begin
       hdr_len_in_bytes = hdr_len_in_bytes + this.m_header_stack[hidx].get_hdr_length();
 	end
@@ -498,7 +512,7 @@ class uvme_transaction extends uvm_sequence_item;
   //pack the entire Ethernet packet
   //@param packer - the packer used by this function
   virtual function void do_pack(uvm_packer packer);
-	uvme_layer_header header_in_op;
+ 	uvme_layer_header header_in_op;
 	header_in_op = this.first_hdr;
 	while(header_in_op != null) begin
 	  header_in_op.do_pack(packer);

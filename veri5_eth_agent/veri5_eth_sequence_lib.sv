@@ -58,7 +58,9 @@ class veri5_eth_seq_lib_default extends uvm_sequence#(veri5_eth_packet);
   
   virtual task body();
     `uvme_trace_func_start("body")
-    `uvm_do(item);
+    `uvm_create(item)
+    `uvme_header_randomize_with(item, PAYLOAD, uvme_payload_header, { length == 64;})
+    `uvm_send(item)
     `uvme_trace_func_end("body")
   endtask : body
   

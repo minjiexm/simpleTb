@@ -148,7 +148,7 @@ class txnType``_agent_base extends uvm_agent; \
       end \
 	end \
 \
-    if (this.base_cfg.active == UVM_ACTIVE) begin \
+    if (this.base_cfg.create_drv == 1) begin \
       this.drv  = txnType``_driver_base::type_id::create(`"drv`",   this); \
       this.seqr = uvm_sequencer#(txnType)::type_id::create(`"seqr`",  this); \
     end \
@@ -164,7 +164,7 @@ class txnType``_agent_base extends uvm_agent; \
   virtual function void connect_phase(uvm_phase phase); \
     super.connect_phase(phase); \
 \
-    if(this.base_cfg.active == UVM_ACTIVE) begin \
+    if(this.base_cfg.create_drv == 1) begin \
       this.drv.seq_item_port.connect(this.seqr.seq_item_export); \
       this.drv.rsp_port.connect(this.seqr.rsp_export); \
     end \

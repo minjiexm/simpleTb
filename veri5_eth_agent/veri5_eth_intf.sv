@@ -18,36 +18,31 @@
 //   permissions and limitations under the License.
 //------------------------------------------------------------------------------
 
-import uvm_pkg::*;
-
-`include "uvme_pkg.sv"
-import uvme_pkg::*;
-
-`include "veri5_eth_pkg.sv"
-import veri5_eth_pkg::*;
-
-`include "veri5_eth_agent_pkg.sv"
-import veri5_eth_agent_pkg::*;
-
-`include "network_pkg.sv"
-import network_pkg::*;
-
-`include "pin_agent_pkg.sv"
-import pin_agent_pkg::*;
-
-`include "switch_model_pkg.sv"
-import switch_model_pkg::*;
-
-`include "switch_scoreboard_pkg.sv"
-import switch_scoreboard_pkg::*;
+`ifndef  VERI5_ETH_INTF_SV
+`define  VERI5_ETH_INTF_SV
 
 
-`include "switch_DUT_model.sv"
-`include "switch_DUT_interface.sv"
-`include "switch_DUT_core.sv"
-`include "switch_verif_drv_mon_subenv.sv"
-`include "switch_verif_env.sv"
+interface veri5_eth_intf #(parameter tsu = 1, tco = 1) (input wire clk, input wire rst);
 
-`include "network_topology_demo.svh"
+  logic [7:0] data;
+  logic sop;
+  logic eop;
+  logic srdy;
+  logic drdy;
 
-`include "network_test.svh"
+  clocking transmit @ (posedge clk);
+    input #tsu drdy;
+    output #tco data, sop, eop, srdy;
+  endclocking
+
+  clocking receive @ (posedge clk);
+    output #tco drdy;
+  endclocking
+
+  clocking passive @ (posedge clk);
+    input #tsu drdy, data, sop, eop, srdy;
+  endclocking
+
+endinterface : veri5_eth_intf
+
+`endif  //VERI5_ETH_INTF_SV

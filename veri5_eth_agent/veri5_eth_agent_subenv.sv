@@ -52,7 +52,7 @@ class veri5_eth_agent_subenv_config extends uvme_agent_env_config;
 
   function new (string name = "veri5_eth_agent_subenv_config");
     super.new(name);
-    this.active_num  = 4;   //active agent number
+    this.active_num  = 8;   //active agent number
     this.passive_num = 4;   //passvie agent number
   endfunction : new
 
@@ -96,7 +96,16 @@ class veri5_eth_agent_subenv extends veri5_eth_packet_agent_env_base;
   virtual function void build_phase(uvm_phase phase);
     set_type_override_by_type(uvme_agent_env_config::get_type(), veri5_eth_agent_subenv_config::get_type());
   
-    factory.set_inst_override_by_type(veri5_eth_packet_agent_base::get_type(), veri5_eth_active_agent::get_type(), {this.get_full_name(), ".", "active_agent*"});
+    factory.set_inst_override_by_type(veri5_eth_packet_agent_base::get_type(), veri5_eth_active_transmit_agent::get_type(), {this.get_full_name(), ".", "active_agent[00]"});
+    factory.set_inst_override_by_type(veri5_eth_packet_agent_base::get_type(), veri5_eth_active_transmit_agent::get_type(), {this.get_full_name(), ".", "active_agent[01]"});
+    factory.set_inst_override_by_type(veri5_eth_packet_agent_base::get_type(), veri5_eth_active_transmit_agent::get_type(), {this.get_full_name(), ".", "active_agent[02]"});
+    factory.set_inst_override_by_type(veri5_eth_packet_agent_base::get_type(), veri5_eth_active_transmit_agent::get_type(), {this.get_full_name(), ".", "active_agent[03]"});
+  
+    factory.set_inst_override_by_type(veri5_eth_packet_agent_base::get_type(), veri5_eth_active_receive_agent::get_type(), {this.get_full_name(), ".", "active_agent[04]"});
+    factory.set_inst_override_by_type(veri5_eth_packet_agent_base::get_type(), veri5_eth_active_receive_agent::get_type(), {this.get_full_name(), ".", "active_agent[05]"});
+    factory.set_inst_override_by_type(veri5_eth_packet_agent_base::get_type(), veri5_eth_active_receive_agent::get_type(), {this.get_full_name(), ".", "active_agent[06]"});
+    factory.set_inst_override_by_type(veri5_eth_packet_agent_base::get_type(), veri5_eth_active_receive_agent::get_type(), {this.get_full_name(), ".", "active_agent[07]"});
+
     factory.set_inst_override_by_type(veri5_eth_packet_agent_base::get_type(), veri5_eth_passive_agent::get_type(), {this.get_full_name(), ".", "passive_agent*"});
 
     super.build_phase(phase);

@@ -3,12 +3,24 @@
 +incdir+$PROJ_ROOT/veri5/network
 +incdir+$PROJ_ROOT/veri5/amiq_eth
 +incdir+$PROJ_ROOT/veri5/veri5_eth
++incdir+$PROJ_ROOT/veri5/pin_agent
 
 +incdir+$PROJ_ROOT/amiq_eth_agent
 +incdir+$PROJ_ROOT/veri5_eth_agent
 +incdir+$PROJ_ROOT/switch_model
 +incdir+$PROJ_ROOT/scoreboard
++incdir+$PROJ_ROOT/switch_verif
 +incdir+$PROJ_ROOT/network_tb
++incdir+$PROJ_ROOT/DUT
 
+###############################################
+# DUT FILE
+###############################################
+$PROJ_ROOT/DUT/switch_DUT_top.sv
+
+###############################################
+# TB FILE
+###############################################
 $PROJ_ROOT/network_tb/network_tb_inc.sv
 $PROJ_ROOT/network_tb/network_tb.sv
+

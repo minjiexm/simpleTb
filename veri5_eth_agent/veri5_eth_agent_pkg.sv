@@ -21,11 +21,15 @@
 `ifndef  VERI5_ETH_AGENT_PKG_SV
 `define  VERI5_ETH_AGENT_PKG_SV
 
+`include "veri5_eth_intf.sv"
+
 package veri5_eth_agent_pkg;
 
   import uvm_pkg::*;
   import uvme_pkg::*;
   import veri5_eth_pkg::*;
+
+  `include "veri5_eth_agent_types.sv"
 
   `include "veri5_eth_sequence_lib.sv"
 
@@ -38,6 +42,8 @@ package veri5_eth_agent_pkg;
 
   `include "veri5_eth_driver.sv"
   `include "veri5_eth_monitor.sv"
+  `include "veri5_eth_receiver.sv"
+  
   `include "veri5_eth_agent_config.sv"
   `include "veri5_eth_agent.sv"
   `include "veri5_eth_agent_subenv.sv"

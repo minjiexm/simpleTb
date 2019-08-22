@@ -31,32 +31,20 @@ import veri5_eth_pkg::*;
 
 class network_test_base extends uvm_test;
 
-  int unsigned sw_port_sz = 4;
-
-  //Member: DUT
-  //
-  //behavior model as Fake DUT
-
-  switch_model           DUT;  //Fake Switch DUT
+  pin_agent pins; 
+  //clock and reset gen
 
 
-  //Member: ref_model
-  //
-  //behavior model as reference model
-
-  switch_model           ref_model;
-
-
-  //Member: sb
-  //
-  //switch Scoreboard
-  switch_scoreboard      sb;
-
-  //Member: pkt_agent_subenv
-  //
-  //subenv of drive and mointor agents
+  //Member: sw_DUT
+  //Env Top of switch DUT behavior Model
  
-  veri5_eth_agent_subenv  pkt_agent_subenv;
+  switch_DUT_core sw_DUT;
+
+
+  //Member: sw_env
+  //Env Top of switch verification
+ 
+  switch_verif_env sw_env;
 
   //Register with factory
   `uvm_component_utils(network_test_base)
@@ -81,20 +69,14 @@ class network_test_base extends uvm_test;
     
 	`uvme_set_report_server
 	
-    //create instance of fake switch DUT
-    void'( uvm_config_db#(int)::set(this, "DUT", "port_size", this.sw_port_sz));
-    this.DUT = switch_model::type_id::create("DUT", this);
-	
-	//create reference model
-    void'( uvm_config_db#(int)::set(this, "ref_model", "port_size", this.sw_port_sz));
-	this.ref_model = switch_model::type_id::create("ref_model", this);
+    factory.set_type_override_by_type(pin_agent_config::get_type(), pin_agent_config_demo::get_type());
+    this.pins = pin_agent::type_id::create("pin_agent", this);
 
-	//create scoreboard to compare
-	void'( uvm_config_db#(int)::set(this, "sw_scoreboard", "port_size", this.sw_port_sz));
-    this.sb = switch_scoreboard::type_id::create("sb", this);
+    //Switch DUT behavior model
+    this.sw_DUT = switch_DUT_core::type_id::create("sw_DUT", this);
 
-	//create agent which drive and receive data from DUT
-    this.pkt_agent_subenv = veri5_eth_agent_subenv::type_id::create("pkt_agent_subenv", this);
+    //Switch Verification Env Top
+    this.sw_env = switch_verif_env::type_id::create("sw_env", this);
 
  endfunction : build_phase
 
@@ -106,21 +88,7 @@ class network_test_base extends uvm_test;
 
   function void connect_phase(uvm_phase phase);
     super.connect_phase(phase);
-	
-	//connect Fake DUT sw_model to driver and monitor
-    for(int unsigned pidx = 0; pidx < this.sw_port_sz; pidx++) begin
-      //connect DUT output to monitor
-      this.DUT.out_port[pidx].link_fifo(this.pkt_agent_subenv.passive_pkt_agent[pidx].monitor.pkt_rcv_fifo);
-      //connect driver to DUT input
-      this.pkt_agent_subenv.active_pkt_agent[pidx].driver.dut_port.connect(this.DUT.in_port[pidx].get_imp());
 
-	  //connect driver to Reference Model input
-      this.pkt_agent_subenv.active_pkt_agent[pidx].driver.model_port.connect(this.ref_model.in_port[pidx].get_imp());
-  
-      //Connect DUT and Ref to Scoreboard
-      this.ref_model.out_port[pidx].link_export(this.sb.port_checker[pidx].ref_in_exp);
-      this.DUT.out_port[pidx].link_export(this.sb.port_checker[pidx].dut_in_exp);	 
-    end
   endfunction : connect_phase
 
 
@@ -137,7 +105,31 @@ class network_test_base extends uvm_test;
     //this.pkt_agent_subenv.print();();
   endfunction : end_of_elaboration_phase
   
+  
+  
+  //Function: reset_phase
+  //
+  //Standard UVM reset_phase
+  //Setup clock and reset DUT
 
+  virtual task reset_phase(uvm_phase phase);
+	
+    super.reset_phase(phase);
+
+    phase.raise_objection(this); //rasing objection
+    
+    begin //setup clock
+      pin_vir_seq_demo clk_rst_setup_seq = pin_vir_seq_demo::type_id::create("clk_rst_setup_seq");
+      clk_rst_setup_seq.start(this.pins.m_vseqr);
+    end
+
+    #100ns;
+
+    phase.drop_objection(this); //rasing objection
+
+  endtask : reset_phase
+
+  
   
   //Function: report_phase
   //
@@ -186,7 +178,7 @@ class network_test_sequence extends network_test_base;
     
     begin
       veri5_eth_seq_lib_default demo_seq = veri5_eth_seq_lib_default::type_id::create("demo_seq");
-      demo_seq.start(this.pkt_agent_subenv.active_agent[0].seqr);
+      demo_seq.start(this.sw_env.drv_mon_subenv.active_agent[0].seqr);
     end
 
     phase.drop_objection(this); //rasing objection
@@ -245,8 +237,8 @@ class network_test_topology extends network_test_base;
 	
     //connect Fake DUT sw_model to driver and monitor
     for(int unsigned idx = 0; idx < 4; idx++) begin
-	  this.topology_demo.switch_DUT.ports[idx].agent_output.link_sequencer(this.pkt_agent_subenv.active_pkt_agent[idx].seqr);
-	  this.pkt_agent_subenv.passive_pkt_agent[idx].mon.item_collected_port.connect(this.topology_demo.switch_DUT.ports[idx].agent_input_fifo.analysis_export);
+	  this.topology_demo.switch_DUT.ports[idx].agent_output.link_sequencer(this.sw_env.drv_mon_subenv.pkt_transmitter[idx].seqr);
+	  this.sw_env.drv_mon_subenv.pkt_receiver[idx].mon.item_collected_port.connect(this.topology_demo.switch_DUT.ports[idx].agent_input_fifo.analysis_export);
     end
 
   endfunction : connect_phase
@@ -311,9 +303,31 @@ class network_test_veri5_packet extends uvm_test;
 
   task main_phase(uvm_phase phase);
 	veri5_eth_packet_ipv4 ipv4_pkt;
+	
+	veri5_eth_packet_l2 l2_pkt;
+	
 	byte unsigned byte_packed_data[];
 	
     super.main_phase(phase);
+	
+	l2_pkt = veri5_eth_packet_l2::type_id::create("L2_PKT");
+	void'( l2_pkt.randomize() );
+	`uvme_header_randomize_with(l2_pkt, PAYLOAD, uvme_payload_header, { length == 64;})
+	l2_pkt.print();
+	void'( l2_pkt.pack_bytes(byte_packed_data) );    //pack method
+
+    foreach(byte_packed_data[i]) begin
+      `uvm_info("PACK",$sformatf("byte_packed_data[%0d] = 0x%0h",i,byte_packed_data[i]), UVM_LOW)
+    end
+
+	void'( l2_pkt.randomize() );
+	`uvme_header_randomize_with(l2_pkt, PAYLOAD, uvme_payload_header, { length == 64;})
+	l2_pkt.print();
+
+	//TEST Pack
+	void'( l2_pkt.unpack_bytes(byte_packed_data) );    //pack method
+	l2_pkt.print();
+	
 	
 	ipv4_pkt = veri5_eth_packet_ipv4::type_id::create("ipv4_packet");
 	$display("JIEMIN --------------------------------->");
@@ -321,24 +335,26 @@ class network_test_veri5_packet extends uvm_test;
 	`uvme_header_randomize_with(ipv4_pkt, PAYLOAD, uvme_payload_header, { length == 64;})
 	ipv4_pkt.print();
 	`uvme_info($psprintf("ipv4_pkt %s", ipv4_pkt.convert2string()), UVM_NONE)
-	ipv4_pkt.update_crc();
+	//ipv4_pkt.update_crc();
 	
 	//TEST Pack
 	void'( ipv4_pkt.pack_bytes(byte_packed_data) );    //pack method
 	
-    //foreach(byte_packed_data[i]) begin
-    //  `uvm_info("PACK",$sformatf("byte_packed_data[%0d] = 0x%0h",i,byte_packed_data[i]), UVM_LOW)
-    //end
+    foreach(byte_packed_data[i]) begin
+      `uvm_info("PACK",$sformatf("byte_packed_data[%0d] = 0x%0h",i,byte_packed_data[i]), UVM_LOW)
+    end
 
     //TEST Unpack
-	//begin
-	//  veri5_eth_packet_ipv4 ipv4_pkt, ipv4_pkt_1;
-    //  ipv4_pkt_1 =  veri5_eth_packet_ipv4::type_id::create("ipv4_pkt_1");
-	//  void'( ipv4_pkt_1.unpack_bytes(byte_packed_data) );
-    //  ipv4_pkt_1.print();
-    //end
+	begin
+	  veri5_eth_packet_ipv4 ipv4_pkt_1;
+      ipv4_pkt_1 =  veri5_eth_packet_ipv4::type_id::create("ipv4_pkt_1");
+	  void'( ipv4_pkt_1.unpack_bytes(byte_packed_data) );
+      ipv4_pkt_1.print();
+    end
+
 	
 	//TEST convert2string
+	/*
 	begin
 	  veri5_eth_packet pkt = veri5_eth_packet::type_id::create("pkt");
 	  void'( pkt.randomize() );
@@ -349,10 +365,12 @@ class network_test_veri5_packet extends uvm_test;
 	  veri5_eth_packet pkt1;
       `uvme_cast(pkt1, ipv4_pkt.clone(), error);
 	  pkt1.print();
+	  
 	  `uvme_info($psprintf("pkt1 convert2string %s", pkt1.convert2string()), UVM_NONE)
 	  end
 	end
-	
+	*/
+
   endtask : main_phase
 
 

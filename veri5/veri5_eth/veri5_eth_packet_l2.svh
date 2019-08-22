@@ -22,7 +22,6 @@
  *******************************************************************************/
 
 `ifndef __VERI5_ETH_PACKET_L2
-//protection against multiple includes
 `define __VERI5_ETH_PACKET_L2
 
 //basic class for declaring the Ethernet packets with Layer 2 Header
@@ -31,7 +30,7 @@ class veri5_eth_packet_l2 extends veri5_eth_packet;
   veri5_eth_fcs fcs; //4bytes crc for ether header
 
   `uvm_object_utils_begin(veri5_eth_packet_l2)
-    `uvm_field_int(fcs, UVM_ALL_ON)
+    `uvm_field_int(fcs, UVM_ALL_ON|UVM_NOPACK)
   `uvm_object_utils_end
 
   //constructor
@@ -107,8 +106,10 @@ class veri5_eth_packet_l2 extends veri5_eth_packet;
   
   function veri5_eth_address get_mac_da();
     veri5_eth_hdr_l2 l2_hdr;
-	`uvme_cast(l2_hdr, this.get_hdr("ETH_L2"), error)
-	return l2_hdr.destination_address;
+	if($cast(l2_hdr, this.get_hdr("ETH_L2")))
+	  return l2_hdr.destination_address;
+	else
+	  return 0;
   endfunction : get_mac_da
 
 
@@ -118,8 +119,10 @@ class veri5_eth_packet_l2 extends veri5_eth_packet;
   
   function veri5_eth_address get_mac_sa();
     veri5_eth_hdr_l2 l2_hdr;
-	`uvme_cast(l2_hdr, this.get_hdr("ETH_L2"), error)
-	return l2_hdr.source_address;
+	if($cast(l2_hdr, this.get_hdr("ETH_L2")))
+	  return l2_hdr.source_address;
+	else
+	  return 0;
   endfunction : get_mac_sa
 
 

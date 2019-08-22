@@ -35,16 +35,17 @@ class veri5_eth_hdr_l2 extends uvme_layer_header;
   rand veri5_eth_address source_address;
 
   `uvm_object_utils_begin(veri5_eth_hdr_l2)
-    `uvm_field_int(destination_address, UVM_ALL_ON)
-    `uvm_field_int(     source_address, UVM_ALL_ON)
+    `uvm_field_int(destination_address, UVM_ALL_ON|UVM_NOPACK)
+    `uvm_field_int(     source_address, UVM_ALL_ON|UVM_NOPACK)
   `uvm_object_utils_end
 
   //constructor
   //@param name - the name assigned to the instance of this class
   function new(string name = "");
     super.new(name);
-	this.m_hdr_len_in_bytes = 16;  //include 4bytes crc
+	this.m_hdr_len_in_bytes = `VERI5_ETH_HDR_L2_LEN;  //should not include 4 bytes crc
   endfunction : new
+
 
   //converts the information containing in the instance of this class to an easy-to-read string
   //@return easy-to-read string with the information contained in the instance of this class
@@ -54,6 +55,7 @@ class veri5_eth_hdr_l2 extends uvme_layer_header;
     $sformat(what_to_return, {what_to_return,"SA: %012X "},source_address);
     return what_to_return;
   endfunction : convert2string
+
 
   //compares the current class instance with the one provided as an argument
   //@param rhs - Right Hand Side object
@@ -76,6 +78,29 @@ class veri5_eth_hdr_l2 extends uvme_layer_header;
 
     return 1;
   endfunction : compare
+
+
+  //Function: do_pack
+  //
+  //User implement pack functionUsed
+  //pack mac da and mac sa
+
+  virtual function void do_pack (uvm_packer packer);
+    `uvm_pack_int(destination_address)
+    `uvm_pack_int(source_address)
+  endfunction : do_pack
+
+
+  //Function: do_unpack
+  //
+  //User implement unpack functionUsed
+  //unpack mac da and mac sa
+
+  virtual function void do_unpack (uvm_packer packer);
+    `uvm_unpack_int(destination_address)
+    `uvm_unpack_int(source_address)
+  endfunction : do_unpack
+
 
 
   static protected veri5_eth_fcs crc32_ccitt_table[] = {

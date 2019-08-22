@@ -31,9 +31,11 @@
 
 class veri5_eth_agent extends veri5_eth_packet_agent_base;
 
-  veri5_eth_driver driver;
-  veri5_eth_monitor monitor;
-
+  veri5_eth_agent_config cfg;
+  veri5_eth_driver       driver;
+  veri5_eth_receiver     receier;  //just driver drdy signal to make source keep send packets out
+  veri5_eth_monitor      monitor;
+  
   `uvm_component_utils(veri5_eth_agent)
 
   //Function: new
@@ -51,10 +53,15 @@ class veri5_eth_agent extends veri5_eth_packet_agent_base;
   //Use factory overwrite to create veri5_eth_driver and monitor
 
   virtual function void build_phase(uvm_phase phase);
-    set_type_override_by_type(  veri5_eth_packet_driver_base::get_type(), veri5_eth_driver::get_type());
+    set_type_override_by_type(  veri5_eth_packet_driver_base::get_type(), veri5_eth_driver::get_type() );
     set_type_override_by_type( veri5_eth_packet_monitor_base::get_type(), veri5_eth_monitor::get_type());
 
     super.build_phase(phase);	
+
+    `uvme_cast(this.cfg, this.base_cfg, fatal)
+	
+	if(this.cfg.agent_type == VERI5_ETH_AGENT_TYPE_Receive && this.cfg.active == UVM_ACTIVE)
+      this.receier = veri5_eth_receiver::type_id::create("receiver", this);
 
     if(this.drv != null) begin
       `uvme_cast(driver, this.drv, fatal);
@@ -70,23 +77,22 @@ endclass : veri5_eth_agent
 
 
 
-
 //------------------------------------------------------------------------------
-// CLASS: veri5_eth_active_agent
+// CLASS: veri5_eth_active_transmit_agent
 //
-// Top active agent class which drive data to DUT.
+// Top active transmit agent class which drive packet data to DUT.
 //------------------------------------------------------------------------------
 
-class veri5_eth_active_agent extends veri5_eth_agent;
+class veri5_eth_active_transmit_agent extends veri5_eth_agent;
 
-  `uvm_component_utils(veri5_eth_active_agent)
+  `uvm_component_utils(veri5_eth_active_transmit_agent)
 
 
   //Function: new
   //
   // Constructor
 
-  function new (string name = "veri5_eth_active_agent", uvm_component parent = null);
+  function new (string name = "veri5_eth_active_transmit_agent", uvm_component parent = null);
     super.new(name, parent);
   endfunction : new
 
@@ -96,11 +102,44 @@ class veri5_eth_active_agent extends veri5_eth_agent;
   //Standard UVM build_phase
 
   virtual function void build_phase(uvm_phase phase);
-    set_type_override_by_type(  uvme_agent_config::get_type(), veri5_eth_active_agent_config::get_type());
+    set_type_override_by_type(  uvme_agent_config::get_type(), veri5_eth_active_transmit_agent_config::get_type());
     super.build_phase(phase);
   endfunction : build_phase
 
-endclass : veri5_eth_active_agent
+endclass : veri5_eth_active_transmit_agent
+
+
+
+//------------------------------------------------------------------------------
+// CLASS: veri5_eth_active_receive_agent
+//
+// Top active receive packet agent class which drive drdy to DUT.
+//------------------------------------------------------------------------------
+
+class veri5_eth_active_receive_agent extends veri5_eth_agent;
+
+  `uvm_component_utils(veri5_eth_active_receive_agent)
+
+
+  //Function: new
+  //
+  // Constructor
+
+  function new (string name = "veri5_eth_active_receive_agent", uvm_component parent = null);
+    super.new(name, parent);
+  endfunction : new
+
+
+  //Function: build_phase
+  //
+  //Standard UVM build_phase
+
+  virtual function void build_phase(uvm_phase phase);
+    set_type_override_by_type(uvme_agent_config::get_type(), veri5_eth_active_receive_agent_config::get_type());
+    super.build_phase(phase);
+  endfunction : build_phase
+
+endclass : veri5_eth_active_receive_agent
 
 
 

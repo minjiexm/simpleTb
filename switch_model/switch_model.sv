@@ -134,10 +134,24 @@ class switch_model extends uvm_agent;
   // Once switch received packet from in_port will trigger packetprocessing
  
   virtual function void packet_processing(veri5_eth_packet pkt, int unsigned src_pidx);
-    veri5_eth_packet_l2 l2_pkt;	
+    veri5_eth_packet eth_pkt;
+    veri5_eth_packet_l2 l2_pkt;
+
     int unsigned dst_pidx; //destination port index
+	
     `uvm_info(this.get_type_name(), $psprintf("[%s] Ingeress received a packet from Port %0d", this.get_name(), src_pidx), UVM_LOW)
-    `uvme_cast(l2_pkt, pkt, error)
+    `uvme_cast(eth_pkt, pkt, error)  //incoming packet must be a veri5_eth_packet type
+
+    if(eth_pkt == null)
+	  return;
+	  
+	l2_pkt = this.parse_l2_packet(eth_pkt);
+
+    if(eth_pkt == null)
+	  return;
+	  
+    if(l2_pkt == null)
+	  return;
 
     //DA lookup;
     if( this.mac_table.lookup(l2_pkt.get_mac_da(), dst_pidx) ) begin
@@ -171,6 +185,32 @@ class switch_model extends uvm_agent;
       end
     end
   endfunction : flood
+
+
+
+  //Function: parse_l2_packet
+  //
+  // Parse L2 Header from Packet
+  //
+
+  virtual function veri5_eth_packet_l2 parse_l2_packet(veri5_eth_packet pkt);
+    veri5_eth_packet_l2 l2_pkt;
+	int unsigned l2_pkt_length = pkt.get_hdr_length();
+
+	if(l2_pkt_length < `VERI5_ETH_HDR_L2_LEN) begin
+	  `uvme_error($psprintf("[parse_l2_packet] Input packet lenght %0d less than ethernet l2 header length %0d, Can not parse layer 2 header!", l2_pkt_length, `VERI5_ETH_HDR_L2_LEN))
+	end
+	
+	l2_pkt = veri5_eth_packet_l2::type_id::create("l2_pkt");
+	
+	begin
+	  bit [7:0] data[];
+	  void'( pkt.pack_bytes(data) );
+	  void'( l2_pkt.unpack_bytes(data) );
+	end
+	
+	return l2_pkt;
+  endfunction : parse_l2_packet
 
 
 endclass : switch_model

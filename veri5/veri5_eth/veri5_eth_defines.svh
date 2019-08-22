@@ -783,4 +783,13 @@
     `define VERI5_ETH_PTP_ANNOUNCE_MESSAGE_TIME_SOURCE_WIDTH 8
 `endif
 
+
+//-----------------------------------------------------------------------//
+//  Define Header Length
+//-----------------------------------------------------------------------//
+`ifndef VERI5_ETH_HDR_L2_LEN
+  //Ethernet L2 Header Length in Bytes
+  `define VERI5_ETH_HDR_L2_LEN 12  //Just Mac DA and Mac SA, total 12 bytes
 `endif
+
+`endif //__VERI5_ETH_DEFINES

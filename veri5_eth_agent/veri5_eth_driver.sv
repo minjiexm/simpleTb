@@ -32,17 +32,15 @@
 
 class veri5_eth_driver extends veri5_eth_packet_driver_base; 
 
+  bit srdy;
+  int unsigned initial_delay = 10;
 
-  //Member: pkt_drv_port
-  //
-  //veri5_eth_driver will send the data to fake DUT through this port.
-
-  uvm_analysis_port#(veri5_eth_packet) dut_port;
-
-  uvm_analysis_port#(veri5_eth_packet) model_port;
+  //Member: vif
+  //Virtual interface for driving signals
+  
+  virtual veri5_eth_intf vif;
 
   `uvm_component_utils(veri5_eth_driver)
-
 
   //Function: new
   //
@@ -59,8 +57,10 @@ class veri5_eth_driver extends veri5_eth_packet_driver_base;
 
   virtual function void build_phase(uvm_phase phase);
     super.build_phase(phase);
-	this.dut_port   = new("dut_port", this);
-	this.model_port = new("model_port", this);
+	
+    if( !uvm_config_db#(virtual veri5_eth_intf)::get(this, "", "vif", this.vif) ) begin
+      `uvm_error(this.get_type_name(), $psprintf("[build_phase] %s can not get veri5_eth_intf from config db", this.get_name()))
+    end
   endfunction : build_phase
 
 
@@ -70,29 +70,95 @@ class veri5_eth_driver extends veri5_eth_packet_driver_base;
 
   virtual task run_phase(uvm_phase phase);
     super.run_phase(phase);
+	
+	this.drive_idle();
+	
+	repeat(this.initial_delay) @vif.transmit;
+	
     forever begin
       seq_item_port.get_next_item(req);
 
-	  begin
-	    veri5_eth_packet pkt4model;
-		`uvme_cast(pkt4model, req.clone(), fatal)
-        `uvme_trace_data($psprintf("[run_phase] Send the packet %s to Ref Model", pkt4model.convert2string()))
-        this.model_port.write(pkt4model); //drive to refmodel
-      end
+      @vif.transmit;
 
-      #100ns;  //wait for 100ns then start to send the packet, mimic DUT process delay
-      begin //drive DUT
-	    veri5_eth_packet pkt4dut;
-		`uvme_cast(pkt4dut, req.clone(), fatal)
-        `uvme_trace_data($psprintf("[run_phase] Send the packet %s to DUT", pkt4dut.convert2string()))
-        this.dut_port.write(pkt4dut);  //drive to DUT
-      end
+	  this.drive_packet(req);
+      `uvme_trace_data($psprintf("[drive_packet] Done of sending the packet %s to DUT", req.convert2string()))
 
       seq_item_port.item_done();
 
 	  this.rsp_port.write(req);  //send req back as response
+
     end
   endtask : run_phase
+
+
+  // Function: drive packet
+  //
+  // drive a single packet
+  
+  virtual task drive_packet(veri5_eth_packet pkt);
+    int unsigned byte_idx = 0;
+    bit [7:0] pkt_data[];
+
+	if(!pkt.pack_bytes(pkt_data))
+  	  return;
+
+	//pkt.print();
+
+    while( byte_idx < pkt_data.size() ) begin
+      //@vif.transmit;
+
+      this.drive_srdy(1);
+
+      if( !this.srdy )
+        continue;
+
+      if(byte_idx == 0) begin
+        vif.transmit.sop  <= 1;
+	  end
+      else
+        vif.transmit.sop  <= 0;
+
+      if(byte_idx == (pkt_data.size()-1))
+        vif.transmit.eop  <= 1;
+      else
+        vif.transmit.eop  <= 0;
+
+      vif.transmit.data <= pkt_data[byte_idx++];
+
+      do begin  //wait for drdy valid then can send next data
+        @vif.transmit;
+      end
+      while( vif.transmit.drdy !== 1);
+	  
+    end
+
+    this.drive_idle();
+
+  endtask : drive_packet
+
+
+
+  // Function: drive_srdy
+  //
+  // drive srdy signal
+  
+  virtual task drive_srdy(input bit ready);
+    vif.transmit.srdy <= ready;
+	this.srdy = ready;
+  endtask : drive_srdy
+
+
+
+  // Function: drive_idle
+  //
+  // drive idle status to bus
+  
+  virtual task drive_idle();
+    this.drive_srdy(0);
+	vif.transmit.data <= 0;
+	vif.transmit.sop  <= 0;
+	vif.transmit.eop  <= 0;
+  endtask : drive_idle
 
 
 endclass : veri5_eth_driver

@@ -204,6 +204,16 @@ class uvme_layer_output #(type T = uvm_sequence_item) extends uvm_component;
   endfunction : get_connect_input
 
 
+  // Function: get_inner_side_tlm_fifo
+  //
+  // Get inner tlm fifo handle, which should be receiver data from inner side
+ 
+  virtual function uvm_tlm_analysis_fifo#(T) get_inner_side_tlm_fifo();
+    return  this.m_analysis_fifo;
+  endfunction : get_inner_side_tlm_fifo
+
+
+
 
   // Function: link_sequencer
   //

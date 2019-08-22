@@ -32,12 +32,12 @@
 
 class uvme_agent_config extends uvm_object;
 
-  uvm_active_passive_enum active = UVM_ACTIVE;
+  bit create_drv;
 
   bit enable_func_cov = 0;
 
   `uvm_object_utils_begin(uvme_agent_config)
-    `uvm_field_enum(uvm_active_passive_enum, active, UVM_ALL_ON)
+    `uvm_field_int(create_drv, UVM_ALL_ON)
     `uvm_field_int(enable_func_cov, UVM_ALL_ON)
   `uvm_object_utils_end
 
